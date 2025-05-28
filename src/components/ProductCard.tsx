@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Star, Leaf } from 'lucide-react';
@@ -31,6 +30,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
       title: "Added to cart!",
       description: `${product.name} has been added to your cart.`,
     });
+  };
+
+  const formatPrice = (price: number) => {
+    return `TZS ${price.toLocaleString()}`;
   };
 
   const getAvailabilityColor = (availability: string) => {
@@ -105,9 +108,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-2">
-                <span className="text-xl font-bold text-green-600">${product.price}</span>
+                <span className="text-xl font-bold text-green-600">{formatPrice(product.price)}</span>
                 {product.originalPrice && (
-                  <span className="text-sm text-gray-500 line-through">${product.originalPrice}</span>
+                  <span className="text-sm text-gray-500 line-through">{formatPrice(product.originalPrice)}</span>
                 )}
               </div>
               <span className="text-sm text-gray-500">{product.unit}</span>
