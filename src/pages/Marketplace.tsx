@@ -216,7 +216,7 @@ const Marketplace = () => {
                             id={category}
                             checked={selectedCategories.includes(category)}
                             onCheckedChange={(checked) => 
-                              handleCategoryChange(category, checked as boolean)
+                              handleCategoryChange(category, checked === true)
                             }
                           />
                           <label 
@@ -240,7 +240,7 @@ const Marketplace = () => {
                             id={avail}
                             checked={availability.includes(avail)}
                             onCheckedChange={(checked) => 
-                              handleAvailabilityChange(avail, checked as boolean)
+                              handleAvailabilityChange(avail, checked === true)
                             }
                           />
                           <label 
@@ -260,7 +260,7 @@ const Marketplace = () => {
                       <Checkbox
                         id="organic"
                         checked={organicOnly}
-                        onCheckedChange={setOrganicOnly}
+                        onCheckedChange={(checked) => setOrganicOnly(checked === true)}
                       />
                       <label htmlFor="organic" className="text-sm cursor-pointer">
                         Organic Only
