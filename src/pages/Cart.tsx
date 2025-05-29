@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Plus, Minus, Trash2, ArrowLeft } from 'lucide-react';
@@ -6,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useCartStore } from '@/store/cartStore';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 
 const Cart = () => {
   const { items, updateQuantity, removeItem, getTotalPrice, clearCart } = useCartStore();
@@ -21,27 +22,33 @@ const Cart = () => {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <ShoppingCart className="h-24 w-24 text-gray-400 mx-auto mb-6" />
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Your cart is empty</h1>
-          <p className="text-gray-600 mb-8">Add some delicious products to get started!</p>
-          <Link to="/marketplace">
-            <Button size="lg" className="bg-green-600 hover:bg-green-700">
-              Start Shopping
-            </Button>
-          </Link>
-        </motion.div>
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
+        <div className="flex-1 flex items-center justify-center py-16">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center"
+          >
+            <ShoppingCart className="h-24 w-24 text-gray-400 mx-auto mb-6" />
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Your cart is empty</h1>
+            <p className="text-gray-600 mb-8">Add some delicious products to get started!</p>
+            <Link to="/marketplace">
+              <Button size="lg" className="bg-green-600 hover:bg-green-700">
+                Start Shopping
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <motion.div
@@ -199,6 +206,8 @@ const Cart = () => {
           </motion.div>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };

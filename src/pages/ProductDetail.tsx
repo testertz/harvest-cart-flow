@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -10,6 +9,8 @@ import { Separator } from '@/components/ui/separator';
 import { useCartStore } from '@/store/cartStore';
 import { products } from '@/data/products';
 import ProductCard from '@/components/ProductCard';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 import { toast } from '@/hooks/use-toast';
 
 const ProductDetail = () => {
@@ -77,6 +78,8 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <motion.div 
@@ -269,6 +272,8 @@ const ProductDetail = () => {
           </motion.div>
         )}
       </div>
+      
+      <Footer />
     </div>
   );
 };

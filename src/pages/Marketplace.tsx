@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import ProductCard from '@/components/ProductCard';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 import { products, categories } from '@/data/products';
 import { Product } from '@/data/products';
 
@@ -24,17 +26,22 @@ const Marketplace = () => {
 
   const filteredProducts = useMemo(() => {
     let filtered = products.filter((product) => {
-      // Search filter
-      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           product.seller.toLowerCase().includes(searchTerm.toLowerCase());
+      // Enhanced search filter - search in name, description, seller, location, and category
+      const searchLower = searchTerm.toLowerCase();
+      const matchesSearch = searchTerm === '' || 
+                           product.name.toLowerCase().includes(searchLower) ||
+                           product.description.toLowerCase().includes(searchLower) ||
+                           product.seller.toLowerCase().includes(searchLower) ||
+                           product.location.toLowerCase().includes(searchLower) ||
+                           product.category.toLowerCase().includes(searchLower);
 
       // Category filter
       const matchesCategory = selectedCategories.length === 0 || 
                              selectedCategories.includes(product.category);
 
-      // Price filter
-      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
+      // Price filter - convert to thousands for easier filtering
+      const priceInThousands = product.price / 1000;
+      const matchesPrice = priceInThousands >= priceRange[0] && priceInThousands <= priceRange[1];
 
       // Availability filter
       const matchesAvailability = availability.length === 0 || 
@@ -105,6 +112,8 @@ const Marketplace = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-6">
@@ -116,7 +125,7 @@ const Marketplace = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <Input
                 type="text"
-                placeholder="Search products..."
+                placeholder="Search products, farmers, locations..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -149,9 +158,20 @@ const Marketplace = () => {
           </div>
 
           {/* Active Filters */}
-          {(selectedCategories.length > 0 || availability.length > 0 || organicOnly) && (
+          {(selectedCategories.length > 0 || availability.length > 0 || organicOnly || searchTerm) && (
             <div className="flex flex-wrap items-center gap-2 mt-4">
               <span className="text-sm font-medium text-gray-700">Active filters:</span>
+              {searchTerm && (
+                <Badge variant="secondary">
+                  Search: "{searchTerm}"
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="ml-2 text-gray-500 hover:text-gray-700"
+                  >
+                    ×
+                  </button>
+                </Badge>
+              )}
               {selectedCategories.map((category) => (
                 <Badge key={category} variant="secondary" className="capitalize">
                   {category}
@@ -277,6 +297,11 @@ const Marketplace = () => {
             <div className="flex items-center justify-between mb-6">
               <p className="text-gray-600">
                 Showing {filteredProducts.length} of {products.length} products
+                {searchTerm && (
+                  <span className="text-green-600 font-medium">
+                    {" "}for "{searchTerm}"
+                  </span>
+                )}
               </p>
             </div>
 
@@ -295,15 +320,25 @@ const Marketplace = () => {
 
             {filteredProducts.length === 0 && (
               <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">No products found matching your criteria.</p>
+                <p className="text-gray-500 text-lg mb-2">
+                  {searchTerm 
+                    ? `No products found for "${searchTerm}"`
+                    : "No products found matching your criteria."
+                  }
+                </p>
+                <p className="text-gray-400 mb-4">
+                  Try adjusting your search terms or filters
+                </p>
                 <Button variant="outline" onClick={clearFilters} className="mt-4">
-                  Clear Filters
+                  Clear All Filters
                 </Button>
               </div>
             )}
           </div>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };
