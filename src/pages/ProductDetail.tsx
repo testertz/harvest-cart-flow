@@ -53,6 +53,10 @@ const ProductDetail = () => {
     });
   };
 
+  const formatPrice = (price: number) => {
+    return `TZS ${price.toLocaleString()}`;
+  };
+
   const getAvailabilityColor = (availability: string) => {
     switch (availability) {
       case 'in-stock': return 'bg-green-500';
@@ -155,9 +159,9 @@ const ProductDetail = () => {
               </div>
 
               <div className="flex items-baseline space-x-3 mb-6">
-                <span className="text-3xl font-bold text-green-600">${product.price}</span>
+                <span className="text-3xl font-bold text-green-600">{formatPrice(product.price)}</span>
                 {product.originalPrice && (
-                  <span className="text-xl text-gray-500 line-through">${product.originalPrice}</span>
+                  <span className="text-xl text-gray-500 line-through">{formatPrice(product.originalPrice)}</span>
                 )}
                 <span className="text-lg text-gray-500">{product.unit}</span>
               </div>

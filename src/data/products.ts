@@ -244,10 +244,344 @@ export const products: Product[] = [
       shelf_life: '1-2 weeks',
       storage: 'Keep in cool, ventilated place'
     }
+  },
+  {
+    id: '11',
+    name: 'White Rice',
+    price: 3200,
+    image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop&auto=format',
+    category: 'grains',
+    seller: 'Mwanza Rice Farmers',
+    rating: 4.5,
+    reviews: 145,
+    description: 'High-quality white rice from Mwanza region. Perfect for pilau, wali wa nazi, and everyday meals.',
+    unit: 'per kg',
+    availability: 'in-stock',
+    organic: false,
+    location: 'Mwanza, Tanzania',
+    harvestDate: '2024-01-08',
+    specifications: {
+      origin: 'Mwanza Rice Farmers, Tanzania',
+      variety: 'Jasmine Rice',
+      shelf_life: '24 months',
+      storage: 'Dry, airtight container'
+    }
+  },
+  {
+    id: '12',
+    name: 'Green Mangoes (Maembe)',
+    price: 2200,
+    originalPrice: 2800,
+    image: 'https://images.unsplash.com/photo-1553279374-2640994d5fb5?w=400&h=300&fit=crop&auto=format',
+    category: 'fruits',
+    seller: 'Pwani Mango Farms',
+    rating: 4.7,
+    reviews: 112,
+    description: 'Fresh green mangoes from coastal region. Perfect for making chutneys, pickles, or eating with salt.',
+    unit: 'per kg',
+    availability: 'in-stock',
+    organic: true,
+    location: 'Pwani, Tanzania',
+    harvestDate: '2024-01-14',
+    specifications: {
+      origin: 'Pwani Mango Farms, Tanzania',
+      variety: 'Kent Mango',
+      shelf_life: '1-2 weeks',
+      storage: 'Room temperature until ripe'
+    }
+  },
+  {
+    id: '13',
+    name: 'Sweet Potatoes (Viazi Vitamu)',
+    price: 1600,
+    image: 'https://images.unsplash.com/photo-1590165482129-1b8508137c18?w=400&h=300&fit=crop&auto=format',
+    category: 'vegetables',
+    seller: 'Kigoma Root Cooperative',
+    rating: 4.4,
+    reviews: 98,
+    description: 'Orange-fleshed sweet potatoes from Kigoma. Rich in vitamins and perfect for roasting or boiling.',
+    unit: 'per kg',
+    availability: 'in-stock',
+    organic: true,
+    location: 'Kigoma, Tanzania',
+    harvestDate: '2024-01-10',
+    specifications: {
+      origin: 'Kigoma Root Cooperative, Tanzania',
+      variety: 'Orange Sweet Potato',
+      shelf_life: '2-3 weeks',
+      storage: 'Cool, dark place'
+    }
+  },
+  {
+    id: '14',
+    name: 'Fresh Onions (Vitunguu)',
+    price: 2400,
+    image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=400&h=300&fit=crop&auto=format',
+    category: 'vegetables',
+    seller: 'Manyara Onion Growers',
+    rating: 4.6,
+    reviews: 87,
+    description: 'Fresh red onions from Lake Manyara region. Essential ingredient for all Tanzanian cooking.',
+    unit: 'per kg',
+    availability: 'in-stock',
+    organic: false,
+    location: 'Manyara, Tanzania',
+    harvestDate: '2024-01-09',
+    specifications: {
+      origin: 'Manyara Onion Growers, Tanzania',
+      variety: 'Red Onions',
+      shelf_life: '3-4 weeks',
+      storage: 'Cool, dry, ventilated area'
+    }
+  },
+  {
+    id: '15',
+    name: 'Groundnuts (Karanga)',
+    price: 5500,
+    originalPrice: 6200,
+    image: 'https://images.unsplash.com/photo-1599593292715-4490b2c41ce5?w=400&h=300&fit=crop&auto=format',
+    category: 'grains',
+    seller: 'Tabora Nut Farmers',
+    rating: 4.8,
+    reviews: 156,
+    description: 'Premium groundnuts from Tabora region. Perfect for making groundnut sauce, roasting, or oil production.',
+    unit: 'per kg',
+    availability: 'in-stock',
+    organic: true,
+    location: 'Tabora, Tanzania',
+    harvestDate: '2024-01-07',
+    specifications: {
+      origin: 'Tabora Nut Farmers, Tanzania',
+      variety: 'Valencia Groundnuts',
+      shelf_life: '6 months',
+      storage: 'Dry, airtight container'
+    }
+  },
+  {
+    id: '16',
+    name: 'Fresh Pineapples (Nanasi)',
+    price: 3500,
+    image: 'https://images.unsplash.com/photo-1544717030-847e8e7f4a6c?w=400&h=300&fit=crop&auto=format',
+    category: 'fruits',
+    seller: 'Morogoro Tropical Fruits',
+    rating: 4.7,
+    reviews: 123,
+    description: 'Sweet, juicy pineapples from Morogoro. Perfect for fresh eating, juice, or traditional dishes.',
+    unit: 'per piece',
+    availability: 'in-stock',
+    organic: true,
+    location: 'Morogoro, Tanzania',
+    harvestDate: '2024-01-13',
+    specifications: {
+      origin: 'Morogoro Tropical Fruits, Tanzania',
+      variety: 'Smooth Cayenne',
+      shelf_life: '5-7 days',
+      storage: 'Room temperature until ripe'
+    }
+  },
+  {
+    id: '17',
+    name: 'Black Beans (Maharage Meusi)',
+    price: 4200,
+    image: 'https://images.unsplash.com/photo-1571197200840-2be2bb8a0c1d?w=400&h=300&fit=crop&auto=format',
+    category: 'grains',
+    seller: 'Rukwa Bean Cooperative',
+    rating: 4.6,
+    reviews: 94,
+    description: 'High-quality black beans from Rukwa region. Rich in protein and perfect for traditional bean dishes.',
+    unit: 'per kg',
+    availability: 'in-stock',
+    organic: false,
+    location: 'Rukwa, Tanzania',
+    harvestDate: '2024-01-06',
+    specifications: {
+      origin: 'Rukwa Bean Cooperative, Tanzania',
+      variety: 'Black Turtle Beans',
+      shelf_life: '24 months',
+      storage: 'Cool, dry place in sealed container'
+    }
+  },
+  {
+    id: '18',
+    name: 'Fresh Cabbage (Kabichi)',
+    price: 1800,
+    image: 'https://images.unsplash.com/photo-1594282486624-e35e44e80d2b?w=400&h=300&fit=crop&auto=format',
+    category: 'vegetables',
+    seller: 'Njombe Highland Farms',
+    rating: 4.5,
+    reviews: 76,
+    description: 'Fresh green cabbage from Njombe highlands. Crisp and perfect for salads, cooking, or fermentation.',
+    unit: 'per head',
+    availability: 'in-stock',
+    organic: true,
+    location: 'Njombe, Tanzania',
+    harvestDate: '2024-01-12',
+    specifications: {
+      origin: 'Njombe Highland Farms, Tanzania',
+      variety: 'Green Cabbage',
+      shelf_life: '2-3 weeks',
+      storage: 'Refrigerate or cool place'
+    }
+  },
+  {
+    id: '19',
+    name: 'Passion Fruits (Marakuja)',
+    price: 4800,
+    originalPrice: 5500,
+    image: 'https://images.unsplash.com/photo-1564632043262-b66d33b6b755?w=400&h=300&fit=crop&auto=format',
+    category: 'fruits',
+    seller: 'Tanga Passion Growers',
+    rating: 4.9,
+    reviews: 142,
+    description: 'Aromatic passion fruits from Tanga region. Perfect for juice, desserts, or eating fresh.',
+    unit: 'per kg',
+    availability: 'low-stock',
+    organic: true,
+    location: 'Tanga, Tanzania',
+    harvestDate: '2024-01-14',
+    specifications: {
+      origin: 'Tanga Passion Growers, Tanzania',
+      variety: 'Purple Passion Fruit',
+      shelf_life: '1-2 weeks',
+      storage: 'Room temperature until ripe'
+    }
+  },
+  {
+    id: '20',
+    name: 'White Maize (Mahindi Meupe)',
+    price: 2200,
+    image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop&auto=format',
+    category: 'grains',
+    seller: 'Ruvuma Maize Farmers',
+    rating: 4.7,
+    reviews: 167,
+    description: 'Premium white maize from Ruvuma region. Perfect for making ugali flour and traditional porridge.',
+    unit: 'per kg',
+    availability: 'in-stock',
+    organic: false,
+    location: 'Ruvuma, Tanzania',
+    harvestDate: '2024-01-05',
+    specifications: {
+      origin: 'Ruvuma Maize Farmers, Tanzania',
+      variety: 'White Dent Corn',
+      shelf_life: '12 months',
+      storage: 'Dry, pest-free storage'
+    }
+  },
+  {
+    id: '21',
+    name: 'Fresh Ginger (Tangawizi)',
+    price: 6800,
+    image: 'https://images.unsplash.com/photo-1615485020890-4c3acf6eef7b?w=400&h=300&fit=crop&auto=format',
+    category: 'herbs',
+    seller: 'Mwanza Spice Gardens',
+    rating: 4.8,
+    reviews: 89,
+    description: 'Fresh, aromatic ginger from Mwanza. Perfect for cooking, tea, or medicinal purposes.',
+    unit: 'per kg',
+    availability: 'in-stock',
+    organic: true,
+    location: 'Mwanza, Tanzania',
+    harvestDate: '2024-01-11',
+    specifications: {
+      origin: 'Mwanza Spice Gardens, Tanzania',
+      variety: 'Common Ginger',
+      shelf_life: '3-4 weeks',
+      storage: 'Cool, dry place'
+    }
+  },
+  {
+    id: '22',
+    name: 'Green Peppers (Pilipili Hoho)',
+    price: 3800,
+    image: 'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=400&h=300&fit=crop&auto=format',
+    category: 'vegetables',
+    seller: 'Arusha Valley Peppers',
+    rating: 4.5,
+    reviews: 95,
+    description: 'Fresh green bell peppers from Arusha valley. Perfect for cooking rice, stews, and salads.',
+    unit: 'per kg',
+    availability: 'in-stock',
+    organic: false,
+    location: 'Arusha, Tanzania',
+    harvestDate: '2024-01-13',
+    specifications: {
+      origin: 'Arusha Valley Peppers, Tanzania',
+      variety: 'Green Bell Pepper',
+      shelf_life: '1-2 weeks',
+      storage: 'Keep in cool place'
+    }
+  },
+  {
+    id: '23',
+    name: 'Watermelons (Tikiti Maji)',
+    price: 2500,
+    image: 'https://images.unsplash.com/photo-1571618770639-cb4ebd30e3f8?w=400&h=300&fit=crop&auto=format',
+    category: 'fruits',
+    seller: 'Shinyanga Melon Farms',
+    rating: 4.6,
+    reviews: 134,
+    description: 'Sweet, juicy watermelons from Shinyanga region. Perfect for hot days and natural hydration.',
+    unit: 'per piece',
+    availability: 'in-stock',
+    organic: true,
+    location: 'Shinyanga, Tanzania',
+    harvestDate: '2024-01-12',
+    specifications: {
+      origin: 'Shinyanga Melon Farms, Tanzania',
+      variety: 'Sugar Baby Watermelon',
+      shelf_life: '7-10 days',
+      storage: 'Cool place, avoid direct sunlight'
+    }
+  },
+  {
+    id: '24',
+    name: 'Avocados (Parachichi)',
+    price: 4500,
+    originalPrice: 5200,
+    image: 'https://images.unsplash.com/photo-1583638150180-0d82b3d2a15f?w=400&h=300&fit=crop&auto=format',
+    category: 'fruits',
+    seller: 'Kilimanjaro Avocado Growers',
+    rating: 4.8,
+    reviews: 156,
+    description: 'Creamy avocados from Kilimanjaro slopes. Rich in healthy fats and perfect for salads or smoothies.',
+    unit: 'per kg',
+    availability: 'in-stock',
+    organic: true,
+    location: 'Kilimanjaro, Tanzania',
+    harvestDate: '2024-01-14',
+    specifications: {
+      origin: 'Kilimanjaro Avocado Growers, Tanzania',
+      variety: 'Hass Avocado',
+      shelf_life: '5-7 days when ripe',
+      storage: 'Room temperature until ripe'
+    }
+  },
+  {
+    id: '25',
+    name: 'Coconuts (Nazi)',
+    price: 1500,
+    image: 'https://images.unsplash.com/photo-1556909045-b1fb6a4c5ad8?w=400&h=300&fit=crop&auto=format',
+    category: 'fruits',
+    seller: 'Coastal Coconut Farms',
+    rating: 4.7,
+    reviews: 98,
+    description: 'Fresh coconuts from Tanzania coast. Perfect for coconut water, milk, or cooking wali wa nazi.',
+    unit: 'per piece',
+    availability: 'in-stock',
+    organic: true,
+    location: 'Coastal Region, Tanzania',
+    harvestDate: '2024-01-15',
+    specifications: {
+      origin: 'Coastal Coconut Farms, Tanzania',
+      variety: 'East African Tall',
+      shelf_life: '2-3 months',
+      storage: 'Cool, dry place'
+    }
   }
 ];
 
-export const featuredProducts = products.slice(0, 4);
+export const featuredProducts = products.slice(0, 6);
 
 export const categories = [
   'vegetables',

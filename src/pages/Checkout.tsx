@@ -1,42 +1,51 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { CreditCard, Lock, CheckCircle } from 'lucide-react';
+import { ArrowLeft, CreditCard, MapPin, User, Phone, Mail, Check } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useCartStore } from '@/store/cartStore';
 import { toast } from '@/hooks/use-toast';
 
 const Checkout = () => {
   const { items, getTotalPrice, clearCart } = useCartStore();
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    address: '',
+    city: '',
+    region: '',
+    zipCode: '',
+    paymentMethod: 'mobile_money',
+    mobileNumber: '',
+    saveInfo: false
+  });
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
 
+  const formatPrice = (price: number) => {
+    return `TZS ${price.toLocaleString()}`;
+  };
+
   const subtotal = getTotalPrice();
-  const shipping = subtotal > 50 ? 0 : 5.99;
+  const shipping = subtotal > 50000 ? 0 : 5000;
   const tax = subtotal * 0.08;
   const total = subtotal + shipping + tax;
 
-  const [formData, setFormData] = useState({
-    email: '',
-    firstName: '',
-    lastName: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
-    nameOnCard: ''
-  });
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -44,15 +53,15 @@ const Checkout = () => {
     setIsProcessing(true);
 
     // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 3000));
 
-    setOrderComplete(true);
     setIsProcessing(false);
+    setOrderComplete(true);
     clearCart();
-
+    
     toast({
-      title: "Order placed successfully!",
-      description: "You will receive a confirmation email shortly.",
+      title: "Order Placed Successfully!",
+      description: "Thank you for your purchase. You will receive a confirmation email shortly.",
     });
   };
 
@@ -65,10 +74,12 @@ const Checkout = () => {
           className="text-center"
         >
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Your cart is empty</h1>
-          <p className="text-gray-600 mb-8">Add some products before checking out!</p>
-          <Button size="lg" className="bg-green-600 hover:bg-green-700">
-            Start Shopping
-          </Button>
+          <p className="text-gray-600 mb-8">Add some products before checkout!</p>
+          <Link to="/marketplace">
+            <Button size="lg" className="bg-green-600 hover:bg-green-700">
+              Browse Products
+            </Button>
+          </Link>
         </motion.div>
       </div>
     );
@@ -80,20 +91,27 @@ const Checkout = () => {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center max-w-md"
+          className="text-center max-w-md mx-auto p-8"
         >
-          <CheckCircle className="h-24 w-24 text-green-600 mx-auto mb-6" />
+          <div className="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Check className="h-10 w-10 text-green-600" />
+          </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Order Confirmed!</h1>
           <p className="text-gray-600 mb-8">
-            Thank you for your purchase. Your order has been confirmed and will be processed shortly.
+            Thank you for supporting local Tanzanian farmers. Your order will be processed 
+            and delivered within 2-3 business days.
           </p>
-          <div className="space-y-3">
-            <Button size="lg" className="w-full bg-green-600 hover:bg-green-700">
-              Track Your Order
-            </Button>
-            <Button variant="outline" size="lg" className="w-full">
-              Continue Shopping
-            </Button>
+          <div className="space-y-4">
+            <Link to="/marketplace">
+              <Button className="w-full bg-green-600 hover:bg-green-700">
+                Continue Shopping
+              </Button>
+            </Link>
+            <Link to="/">
+              <Button variant="outline" className="w-full">
+                Back to Home
+              </Button>
+            </Link>
           </div>
         </motion.div>
       </div>
@@ -103,183 +121,191 @@ const Checkout = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Checkout</h1>
+          <Link to="/cart" className="flex items-center text-green-600 hover:text-green-700 mb-4">
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back to Cart
+          </Link>
+          <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
           <p className="text-gray-600">Complete your order</p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Checkout Form */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-8">
               {/* Contact Information */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Contact Information</CardTitle>
+                  <CardTitle className="flex items-center">
+                    <User className="h-5 w-5 mr-2" />
+                    Contact Information
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
-                      required
-                      placeholder="john@example.com"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Shipping Address */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Shipping Address</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="firstName">First Name</Label>
                       <Input
                         id="firstName"
+                        name="firstName"
                         value={formData.firstName}
-                        onChange={(e) => handleInputChange('firstName', e.target.value)}
+                        onChange={handleInputChange}
                         required
-                        placeholder="John"
                       />
                     </div>
                     <div>
                       <Label htmlFor="lastName">Last Name</Label>
                       <Input
                         id="lastName"
+                        name="lastName"
                         value={formData.lastName}
-                        onChange={(e) => handleInputChange('lastName', e.target.value)}
+                        onChange={handleInputChange}
                         required
-                        placeholder="Doe"
                       />
                     </div>
                   </div>
-
                   <div>
-                    <Label htmlFor="address">Street Address</Label>
+                    <Label htmlFor="email">Email</Label>
                     <Input
-                      id="address"
-                      value={formData.address}
-                      onChange={(e) => handleInputChange('address', e.target.value)}
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
                       required
-                      placeholder="123 Main Street"
                     />
                   </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="city">City</Label>
-                      <Input
-                        id="city"
-                        value={formData.city}
-                        onChange={(e) => handleInputChange('city', e.target.value)}
-                        required
-                        placeholder="San Francisco"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="state">State</Label>
-                      <Select value={formData.state} onValueChange={(value) => handleInputChange('state', value)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select state" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="CA">California</SelectItem>
-                          <SelectItem value="NY">New York</SelectItem>
-                          <SelectItem value="TX">Texas</SelectItem>
-                          <SelectItem value="FL">Florida</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="w-full md:w-1/2">
-                    <Label htmlFor="zipCode">ZIP Code</Label>
+                  <div>
+                    <Label htmlFor="phone">Phone Number</Label>
                     <Input
-                      id="zipCode"
-                      value={formData.zipCode}
-                      onChange={(e) => handleInputChange('zipCode', e.target.value)}
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder="+255 xxx xxx xxx"
+                      value={formData.phone}
+                      onChange={handleInputChange}
                       required
-                      placeholder="94102"
                     />
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Payment Information */}
+              {/* Delivery Address */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
-                    <CreditCard className="h-5 w-5 mr-2" />
-                    Payment Information
+                    <MapPin className="h-5 w-5 mr-2" />
+                    Delivery Address
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label htmlFor="nameOnCard">Name on Card</Label>
+                    <Label htmlFor="address">Street Address</Label>
                     <Input
-                      id="nameOnCard"
-                      value={formData.nameOnCard}
-                      onChange={(e) => handleInputChange('nameOnCard', e.target.value)}
+                      id="address"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleInputChange}
                       required
-                      placeholder="John Doe"
                     />
                   </div>
-
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="city">City</Label>
+                      <Input
+                        id="city"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="region">Region</Label>
+                      <Input
+                        id="region"
+                        name="region"
+                        placeholder="e.g., Dar es Salaam"
+                        value={formData.region}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </div>
+                  </div>
                   <div>
-                    <Label htmlFor="cardNumber">Card Number</Label>
+                    <Label htmlFor="zipCode">Postal Code</Label>
                     <Input
-                      id="cardNumber"
-                      value={formData.cardNumber}
-                      onChange={(e) => handleInputChange('cardNumber', e.target.value)}
-                      required
-                      placeholder="1234 5678 9012 3456"
-                      maxLength={19}
+                      id="zipCode"
+                      name="zipCode"
+                      value={formData.zipCode}
+                      onChange={handleInputChange}
                     />
                   </div>
+                </CardContent>
+              </Card>
 
-                  <div className="grid grid-cols-2 gap-4">
+              {/* Payment Method */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <CreditCard className="h-5 w-5 mr-2" />
+                    Payment Method
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <RadioGroup
+                    value={formData.paymentMethod}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, paymentMethod: value }))}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="mobile_money" id="mobile_money" />
+                      <Label htmlFor="mobile_money">Mobile Money (M-Pesa, Tigo Pesa, Airtel Money)</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="bank_transfer" id="bank_transfer" />
+                      <Label htmlFor="bank_transfer">Bank Transfer</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="cash_on_delivery" id="cash_on_delivery" />
+                      <Label htmlFor="cash_on_delivery">Cash on Delivery</Label>
+                    </div>
+                  </RadioGroup>
+
+                  {formData.paymentMethod === 'mobile_money' && (
                     <div>
-                      <Label htmlFor="expiryDate">Expiry Date</Label>
+                      <Label htmlFor="mobileNumber">Mobile Money Number</Label>
                       <Input
-                        id="expiryDate"
-                        value={formData.expiryDate}
-                        onChange={(e) => handleInputChange('expiryDate', e.target.value)}
+                        id="mobileNumber"
+                        name="mobileNumber"
+                        placeholder="+255 xxx xxx xxx"
+                        value={formData.mobileNumber}
+                        onChange={handleInputChange}
                         required
-                        placeholder="MM/YY"
-                        maxLength={5}
                       />
                     </div>
-                    <div>
-                      <Label htmlFor="cvv">CVV</Label>
-                      <Input
-                        id="cvv"
-                        value={formData.cvv}
-                        onChange={(e) => handleInputChange('cvv', e.target.value)}
-                        required
-                        placeholder="123"
-                        maxLength={4}
-                      />
-                    </div>
-                  </div>
+                  )}
 
-                  <div className="flex items-center text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
-                    <Lock className="h-4 w-4 mr-2" />
-                    Your payment information is encrypted and secure
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="saveInfo"
+                      checked={formData.saveInfo}
+                      onCheckedChange={(checked) => 
+                        setFormData(prev => ({ ...prev, saveInfo: checked === true }))
+                      }
+                    />
+                    <Label htmlFor="saveInfo" className="text-sm">
+                      Save this information for next time
+                    </Label>
                   </div>
                 </CardContent>
               </Card>
@@ -289,14 +315,14 @@ const Checkout = () => {
                 className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-lg"
                 disabled={isProcessing}
               >
-                {isProcessing ? 'Processing...' : `Complete Order - $${total.toFixed(2)}`}
+                {isProcessing ? 'Processing...' : `Complete Order - ${formatPrice(total)}`}
               </Button>
             </form>
           </motion.div>
 
           {/* Order Summary */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
           >
@@ -315,48 +341,52 @@ const Checkout = () => {
                         className="w-12 h-12 object-cover rounded"
                       />
                       <div className="flex-1">
-                        <h4 className="text-sm font-medium">{item.name}</h4>
+                        <h4 className="font-medium text-sm">{item.name}</h4>
                         <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
                       </div>
-                      <span className="text-sm font-medium">
-                        ${(item.price * item.quantity).toFixed(2)}
-                      </span>
+                      <p className="font-medium text-sm">
+                        {formatPrice(item.price * item.quantity)}
+                      </p>
                     </div>
                   ))}
                 </div>
 
                 <Separator />
 
-                {/* Pricing */}
+                {/* Pricing Breakdown */}
                 <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>${subtotal.toFixed(2)}</span>
+                    <span>{formatPrice(subtotal)}</span>
                   </div>
-                  
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between">
                     <span>Shipping</span>
                     <span>
                       {shipping === 0 ? (
                         <span className="text-green-600 font-medium">FREE</span>
                       ) : (
-                        `$${shipping.toFixed(2)}`
+                        formatPrice(shipping)
                       )}
                     </span>
                   </div>
-                  
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between">
                     <span>Tax</span>
-                    <span>${tax.toFixed(2)}</span>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div className="flex justify-between text-lg font-bold">
-                    <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>{formatPrice(tax)}</span>
                   </div>
                 </div>
+
+                <Separator />
+
+                <div className="flex justify-between text-lg font-bold">
+                  <span>Total</span>
+                  <span>{formatPrice(total)}</span>
+                </div>
+
+                {shipping > 0 && (
+                  <p className="text-sm text-gray-600">
+                    You're {formatPrice(50000 - subtotal)} away from free shipping!
+                  </p>
+                )}
               </CardContent>
             </Card>
           </motion.div>
