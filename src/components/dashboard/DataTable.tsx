@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, Filter, Download, Plus } from 'lucide-react';
+import { Search, Filter, Download, Plus, CheckCircle, XCircle, Edit, Trash2 } from 'lucide-react';
 
 interface Column {
   key: string;
@@ -21,6 +21,8 @@ interface DataTableProps {
   onAdd?: () => void;
   onEdit?: (item: any) => void;
   onDelete?: (item: any) => void;
+  onVerify?: (item: any) => void;
+  onConfirm?: (item: any) => void;
   renderCell?: (item: any, key: string) => React.ReactNode;
 }
 
@@ -32,6 +34,8 @@ const DataTable = ({
   onAdd,
   onEdit,
   onDelete,
+  onVerify,
+  onConfirm,
   renderCell
 }: DataTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -62,13 +66,30 @@ const DataTable = ({
     }
   };
 
+  const handleExport = () => {
+    const csvContent = [
+      columns.map(col => col.title).join(','),
+      ...sortedData.map(item => 
+        columns.map(col => item[col.key]).join(',')
+      )
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${title.toLowerCase().replace(/\s+/g, '_')}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   const defaultRenderCell = (item: any, key: string) => {
     const value = item[key];
     
     if (key === 'status') {
       const getStatusColor = (status: string) => {
         switch (status.toLowerCase()) {
-          case 'active': case 'delivered': case 'approved':
+          case 'active': case 'delivered': case 'approved': case 'verified':
             return 'bg-green-100 text-green-800';
           case 'pending': case 'processing':
             return 'bg-yellow-100 text-yellow-800';
@@ -76,6 +97,8 @@ const DataTable = ({
             return 'bg-red-100 text-red-800';
           case 'shipped':
             return 'bg-blue-100 text-blue-800';
+          case 'low stock':
+            return 'bg-orange-100 text-orange-800';
           default:
             return 'bg-gray-100 text-gray-800';
         }
@@ -88,8 +111,17 @@ const DataTable = ({
       return new Date(value).toLocaleDateString();
     }
     
-    if (key.includes('price') || key.includes('total') || key.includes('amount')) {
+    if (key.includes('price') || key.includes('total') || key.includes('amount') || key.includes('Sales')) {
       return `TZS ${Number(value).toLocaleString()}`;
+    }
+    
+    if (key === 'rating') {
+      return (
+        <div className="flex items-center">
+          <span className="text-yellow-500">★</span>
+          <span className="ml-1">{value}</span>
+        </div>
+      );
     }
     
     return value;
@@ -114,7 +146,7 @@ const DataTable = ({
               <Filter className="h-4 w-4 mr-2" />
               Filter
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleExport}>
               <Download className="h-4 w-4 mr-2" />
               Export
             </Button>
@@ -150,7 +182,7 @@ const DataTable = ({
                     </div>
                   </TableHead>
                 ))}
-                {(onEdit || onDelete) && (
+                {(onEdit || onDelete || onVerify || onConfirm) && (
                   <TableHead className="font-semibold text-gray-700">Actions</TableHead>
                 )}
               </TableRow>
@@ -160,19 +192,33 @@ const DataTable = ({
                 <TableRow key={index} className="hover:bg-gray-50 transition-colors">
                   {columns.map((column) => (
                     <TableCell key={column.key} className="py-4">
-                      {renderCell ? renderCell(item, column.key) : defaultRenderCell(item, column.key)}
+                      {renderCell ? renderCell(item, column.key) || defaultRenderCell(item, column.key) : defaultRenderCell(item, column.key)}
                     </TableCell>
                   ))}
-                  {(onEdit || onDelete) && (
+                  {(onEdit || onDelete || onVerify || onConfirm) && (
                     <TableCell className="py-4">
                       <div className="flex space-x-2">
+                        {onConfirm && item.status === 'Pending' && (
+                          <Button variant="outline" size="sm" onClick={() => onConfirm(item)} className="text-green-600 hover:text-green-700">
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            Confirm
+                          </Button>
+                        )}
+                        {onVerify && item.status === 'Pending' && (
+                          <Button variant="outline" size="sm" onClick={() => onVerify(item)} className="text-blue-600 hover:text-blue-700">
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            Verify
+                          </Button>
+                        )}
                         {onEdit && (
                           <Button variant="outline" size="sm" onClick={() => onEdit(item)}>
+                            <Edit className="h-4 w-4 mr-1" />
                             Edit
                           </Button>
                         )}
                         {onDelete && (
                           <Button variant="destructive" size="sm" onClick={() => onDelete(item)}>
+                            <Trash2 className="h-4 w-4 mr-1" />
                             Delete
                           </Button>
                         )}

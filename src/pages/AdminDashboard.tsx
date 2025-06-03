@@ -1,10 +1,9 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuthStore } from '@/store/authStore';
-import DashboardLayout from '@/components/DashboardLayout';
+import AdminLayout from '@/components/admin/AdminLayout';
 import StatCard from '@/components/dashboard/StatCard';
 import DataTable from '@/components/dashboard/DataTable';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
@@ -183,6 +182,31 @@ const AdminDashboard = () => {
     }
   ]);
 
+  const handleAddUser = () => {
+    console.log('Add new user');
+    // Implement add user functionality
+  };
+
+  const handleEditUser = (user: any) => {
+    console.log('Edit user:', user);
+    // Implement edit user functionality
+  };
+
+  const handleDeleteUser = (user: any) => {
+    console.log('Delete user:', user);
+    // Implement delete user functionality
+  };
+
+  const handleVerifyFarmer = (farmer: any) => {
+    console.log('Verify farmer:', farmer);
+    // Implement farmer verification functionality
+  };
+
+  const handleExportData = () => {
+    console.log('Export data');
+    // Implement data export functionality
+  };
+
   const orderColumns = [
     { key: 'id', title: 'Order ID', sortable: true },
     { key: 'customer', title: 'Customer', sortable: true },
@@ -293,7 +317,7 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <DashboardLayout 
+    <AdminLayout 
       title="Admin Dashboard"
       subtitle={`Welcome back, ${user?.name}! Here's your platform overview.`}
     >
@@ -302,6 +326,26 @@ const AdminDashboard = () => {
         {dashboardStats.map((stat, index) => (
           <StatCard key={index} {...stat} />
         ))}
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
+        <Button onClick={handleAddUser} className="flex items-center space-x-2">
+          <Users className="h-4 w-4" />
+          <span>Add User</span>
+        </Button>
+        <Button variant="outline" onClick={handleVerifyFarmer} className="flex items-center space-x-2">
+          <UserCheck className="h-4 w-4" />
+          <span>Verify Farmers</span>
+        </Button>
+        <Button variant="outline" onClick={handleExportData} className="flex items-center space-x-2">
+          <Package className="h-4 w-4" />
+          <span>Export Data</span>
+        </Button>
+        <Button variant="outline" className="flex items-center space-x-2">
+          <AlertTriangle className="h-4 w-4" />
+          <span>System Alerts</span>
+        </Button>
       </div>
 
       {/* Charts */}
@@ -470,9 +514,9 @@ const AdminDashboard = () => {
             data={users}
             columns={userColumns}
             searchPlaceholder="Search users..."
-            onAdd={() => console.log('Add new user')}
-            onEdit={(user) => console.log('Edit user:', user)}
-            onDelete={(user) => console.log('Delete user:', user)}
+            onAdd={handleAddUser}
+            onEdit={handleEditUser}
+            onDelete={handleDeleteUser}
           />
         </TabsContent>
 
@@ -497,6 +541,19 @@ const AdminDashboard = () => {
             onAdd={() => console.log('Add new farmer')}
             onEdit={(farmer) => console.log('Edit farmer:', farmer)}
             onDelete={(farmer) => console.log('Delete farmer:', farmer)}
+            renderCell={(item, key) => {
+              if (key === 'status' && item.status === 'Pending') {
+                return (
+                  <div className="flex items-center space-x-2">
+                    <span className="text-orange-600">Pending</span>
+                    <Button size="sm" onClick={() => handleVerifyFarmer(item)}>
+                      Verify
+                    </Button>
+                  </div>
+                );
+              }
+              return undefined;
+            }}
           />
         </TabsContent>
 
@@ -569,7 +626,7 @@ const AdminDashboard = () => {
           </div>
         </TabsContent>
       </Tabs>
-    </DashboardLayout>
+    </AdminLayout>
   );
 };
 
