@@ -13,6 +13,8 @@ import Register from '@/pages/Register';
 import UserDashboard from '@/pages/UserDashboard';
 import AdminDashboard from '@/pages/AdminDashboard';
 import FarmerDashboard from '@/pages/FarmerDashboard';
+import About from '@/pages/About';
+import Contact from '@/pages/Contact';
 import NotFound from '@/pages/NotFound';
 
 // Admin Pages
@@ -40,6 +42,8 @@ function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<AdminUsers />} />

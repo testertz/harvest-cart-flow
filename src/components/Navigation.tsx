@@ -64,13 +64,13 @@ const Navigation = () => {
               Marketplace
             </Link>
             <Link 
-              to="#" 
+              to="/about" 
               className="text-gray-600 hover:text-green-600 transition-colors font-medium"
             >
               About
             </Link>
             <Link 
-              to="#" 
+              to="/contact" 
               className="text-gray-600 hover:text-green-600 transition-colors font-medium"
             >
               Contact
@@ -155,14 +155,14 @@ const Navigation = () => {
                 Marketplace
               </Link>
               <Link 
-                to="#" 
+                to="/about" 
                 className="text-gray-600 hover:text-green-600 transition-colors"
                 onClick={() => setIsOpen(false)}
               >
                 About
               </Link>
               <Link 
-                to="#" 
+                to="/contact" 
                 className="text-gray-600 hover:text-green-600 transition-colors"
                 onClick={() => setIsOpen(false)}
               >

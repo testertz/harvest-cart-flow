@@ -5,7 +5,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, Filter, Download, Plus, CheckCircle, XCircle, Edit, Trash2 } from 'lucide-react';
+import { Search, Filter, Download, Plus, CheckCircle, XCircle, Edit, Trash2, Eye } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Column {
   key: string;
@@ -23,6 +24,7 @@ interface DataTableProps {
   onDelete?: (item: any) => void;
   onVerify?: (item: any) => void;
   onConfirm?: (item: any) => void;
+  onView?: (item: any) => void;
   renderCell?: (item: any, key: string) => React.ReactNode;
 }
 
@@ -36,17 +38,21 @@ const DataTable = ({
   onDelete,
   onVerify,
   onConfirm,
+  onView,
   renderCell
 }: DataTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
 
-  const filteredData = data.filter(item =>
-    Object.values(item).some(value =>
+  const filteredData = data.filter(item => {
+    const matchesSearch = Object.values(item).some(value =>
       String(value).toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+    );
+    const matchesFilter = filterStatus === 'all' || item.status?.toLowerCase() === filterStatus.toLowerCase();
+    return matchesSearch && matchesFilter;
+  });
 
   const sortedData = sortColumn
     ? [...filteredData].sort((a, b) => {
@@ -81,6 +87,51 @@ const DataTable = ({
     a.download = `${title.toLowerCase().replace(/\s+/g, '_')}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
+    toast.success('Data exported successfully!');
+  };
+
+  const handleAdd = () => {
+    if (onAdd) {
+      onAdd();
+      toast.success('Opening add form...');
+    }
+  };
+
+  const handleEdit = (item: any) => {
+    if (onEdit) {
+      onEdit(item);
+      toast.success(`Editing ${item.name || item.id}...`);
+    }
+  };
+
+  const handleDelete = (item: any) => {
+    if (onDelete) {
+      if (window.confirm('Are you sure you want to delete this item?')) {
+        onDelete(item);
+        toast.success(`${item.name || item.id} deleted successfully!`);
+      }
+    }
+  };
+
+  const handleVerify = (item: any) => {
+    if (onVerify) {
+      onVerify(item);
+      toast.success(`${item.name || item.id} verified successfully!`);
+    }
+  };
+
+  const handleConfirm = (item: any) => {
+    if (onConfirm) {
+      onConfirm(item);
+      toast.success(`${item.name || item.id} confirmed successfully!`);
+    }
+  };
+
+  const handleView = (item: any) => {
+    if (onView) {
+      onView(item);
+      toast.info(`Viewing ${item.name || item.id}...`);
+    }
   };
 
   const defaultRenderCell = (item: any, key: string) => {
@@ -89,13 +140,13 @@ const DataTable = ({
     if (key === 'status') {
       const getStatusColor = (status: string) => {
         switch (status.toLowerCase()) {
-          case 'active': case 'delivered': case 'approved': case 'verified':
+          case 'active': case 'delivered': case 'approved': case 'verified': case 'completed': case 'published':
             return 'bg-green-100 text-green-800';
           case 'pending': case 'processing':
             return 'bg-yellow-100 text-yellow-800';
-          case 'inactive': case 'cancelled': case 'rejected':
+          case 'inactive': case 'cancelled': case 'rejected': case 'failed':
             return 'bg-red-100 text-red-800';
-          case 'shipped':
+          case 'shipped': case 'in transit':
             return 'bg-blue-100 text-blue-800';
           case 'low stock':
             return 'bg-orange-100 text-orange-800';
@@ -111,7 +162,7 @@ const DataTable = ({
       return new Date(value).toLocaleDateString();
     }
     
-    if (key.includes('price') || key.includes('total') || key.includes('amount') || key.includes('Sales')) {
+    if (key.includes('price') || key.includes('total') || key.includes('amount') || key.includes('Sales') || key.includes('spent')) {
       return `TZS ${Number(value).toLocaleString()}`;
     }
     
@@ -126,6 +177,8 @@ const DataTable = ({
     
     return value;
   };
+
+  const statusOptions = [...new Set(data.map(item => item.status).filter(Boolean))];
 
   return (
     <Card className="shadow-lg border-0">
@@ -142,6 +195,20 @@ const DataTable = ({
                 className="pl-10 w-64"
               />
             </div>
+            
+            {statusOptions.length > 0 && (
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md bg-white"
+              >
+                <option value="all">All Status</option>
+                {statusOptions.map(status => (
+                  <option key={status} value={status}>{status}</option>
+                ))}
+              </select>
+            )}
+            
             <Button variant="outline" size="sm">
               <Filter className="h-4 w-4 mr-2" />
               Filter
@@ -151,7 +218,7 @@ const DataTable = ({
               Export
             </Button>
             {onAdd && (
-              <Button onClick={onAdd} size="sm">
+              <Button onClick={handleAdd} size="sm">
                 <Plus className="h-4 w-4 mr-2" />
                 Add New
               </Button>
@@ -182,7 +249,7 @@ const DataTable = ({
                     </div>
                   </TableHead>
                 ))}
-                {(onEdit || onDelete || onVerify || onConfirm) && (
+                {(onEdit || onDelete || onVerify || onConfirm || onView) && (
                   <TableHead className="font-semibold text-gray-700">Actions</TableHead>
                 )}
               </TableRow>
@@ -195,29 +262,35 @@ const DataTable = ({
                       {renderCell ? renderCell(item, column.key) || defaultRenderCell(item, column.key) : defaultRenderCell(item, column.key)}
                     </TableCell>
                   ))}
-                  {(onEdit || onDelete || onVerify || onConfirm) && (
+                  {(onEdit || onDelete || onVerify || onConfirm || onView) && (
                     <TableCell className="py-4">
                       <div className="flex space-x-2">
+                        {onView && (
+                          <Button variant="outline" size="sm" onClick={() => handleView(item)} className="text-blue-600 hover:text-blue-700">
+                            <Eye className="h-4 w-4 mr-1" />
+                            View
+                          </Button>
+                        )}
                         {onConfirm && item.status === 'Pending' && (
-                          <Button variant="outline" size="sm" onClick={() => onConfirm(item)} className="text-green-600 hover:text-green-700">
+                          <Button variant="outline" size="sm" onClick={() => handleConfirm(item)} className="text-green-600 hover:text-green-700">
                             <CheckCircle className="h-4 w-4 mr-1" />
                             Confirm
                           </Button>
                         )}
                         {onVerify && item.status === 'Pending' && (
-                          <Button variant="outline" size="sm" onClick={() => onVerify(item)} className="text-blue-600 hover:text-blue-700">
+                          <Button variant="outline" size="sm" onClick={() => handleVerify(item)} className="text-blue-600 hover:text-blue-700">
                             <CheckCircle className="h-4 w-4 mr-1" />
                             Verify
                           </Button>
                         )}
                         {onEdit && (
-                          <Button variant="outline" size="sm" onClick={() => onEdit(item)}>
+                          <Button variant="outline" size="sm" onClick={() => handleEdit(item)}>
                             <Edit className="h-4 w-4 mr-1" />
                             Edit
                           </Button>
                         )}
                         {onDelete && (
-                          <Button variant="destructive" size="sm" onClick={() => onDelete(item)}>
+                          <Button variant="destructive" size="sm" onClick={() => handleDelete(item)}>
                             <Trash2 className="h-4 w-4 mr-1" />
                             Delete
                           </Button>
