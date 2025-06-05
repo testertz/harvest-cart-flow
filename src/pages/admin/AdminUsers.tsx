@@ -1,5 +1,5 @@
-
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
 import DataTable from '@/components/dashboard/DataTable';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +9,8 @@ import { Users, UserPlus, UserCheck, UserX, Download, Filter } from 'lucide-reac
 import StatCard from '@/components/dashboard/StatCard';
 
 const AdminUsers = () => {
+  const navigate = useNavigate();
+  
   const [users] = useState([
     {
       id: 1,
@@ -95,11 +97,11 @@ const AdminUsers = () => {
   ];
 
   const handleAddUser = () => {
-    console.log('Add new user');
+    navigate('/admin/users/add');
   };
 
   const handleEditUser = (user: any) => {
-    console.log('Edit user:', user);
+    navigate(`/admin/users/edit/${user.id}`);
   };
 
   const handleDeleteUser = (user: any) => {
@@ -116,29 +118,33 @@ const AdminUsers = () => {
       subtitle="Manage all platform users, their roles, and activities"
     >
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
         {userStats.map((stat, index) => (
           <StatCard key={index} {...stat} />
         ))}
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
-        <Button onClick={handleAddUser} className="flex items-center space-x-2">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4 mb-6 lg:mb-8">
+        <Button onClick={handleAddUser} className="flex items-center justify-center space-x-2 text-sm">
           <UserPlus className="h-4 w-4" />
-          <span>Add User</span>
+          <span className="hidden sm:inline">Add User</span>
+          <span className="sm:hidden">Add</span>
         </Button>
-        <Button variant="outline" className="flex items-center space-x-2">
+        <Button variant="outline" className="flex items-center justify-center space-x-2 text-sm">
           <Filter className="h-4 w-4" />
-          <span>Filter Users</span>
+          <span className="hidden sm:inline">Filter Users</span>
+          <span className="sm:hidden">Filter</span>
         </Button>
-        <Button variant="outline" className="flex items-center space-x-2">
+        <Button variant="outline" className="flex items-center justify-center space-x-2 text-sm">
           <Download className="h-4 w-4" />
-          <span>Export Users</span>
+          <span className="hidden sm:inline">Export Users</span>
+          <span className="sm:hidden">Export</span>
         </Button>
-        <Button variant="outline" className="flex items-center space-x-2">
+        <Button variant="outline" className="flex items-center justify-center space-x-2 text-sm">
           <UserCheck className="h-4 w-4" />
-          <span>Bulk Actions</span>
+          <span className="hidden sm:inline">Bulk Actions</span>
+          <span className="sm:hidden">Bulk</span>
         </Button>
       </div>
 

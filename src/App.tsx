@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 
@@ -30,6 +29,11 @@ import AdminAnalytics from '@/pages/admin/AdminAnalytics';
 import AdminSettings from '@/pages/admin/AdminSettings';
 import AdminSupport from '@/pages/admin/AdminSupport';
 
+// Add new form imports
+import AddUserForm from '@/pages/admin/forms/AddUserForm';
+import AddProductForm from '@/pages/admin/forms/AddProductForm';
+import AddFarmerForm from '@/pages/admin/forms/AddFarmerForm';
+
 function App() {
   return (
     <Router>
@@ -58,6 +62,15 @@ function App() {
           <Route path="/admin/settings" element={<AdminSettings />} />
           <Route path="/admin/support" element={<AdminSupport />} />
           <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
+          
+          {/* Admin Form Routes */}
+          <Route path="/admin/users/add" element={<AddUserForm />} />
+          <Route path="/admin/users/edit/:id" element={<AddUserForm />} />
+          <Route path="/admin/products/add" element={<AddProductForm />} />
+          <Route path="/admin/products/edit/:id" element={<AddProductForm />} />
+          <Route path="/admin/farmers/add" element={<AddFarmerForm />} />
+          <Route path="/admin/farmers/edit/:id" element={<AddFarmerForm />} />
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />

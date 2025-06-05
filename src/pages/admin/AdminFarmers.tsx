@@ -1,5 +1,5 @@
-
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
 import DataTable from '@/components/dashboard/DataTable';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,8 @@ import { UserCheck, UserPlus, Download, Filter, CheckCircle } from 'lucide-react
 import StatCard from '@/components/dashboard/StatCard';
 
 const AdminFarmers = () => {
+  const navigate = useNavigate();
+  
   const [farmers] = useState([
     {
       id: 1,
@@ -82,11 +84,11 @@ const AdminFarmers = () => {
   ];
 
   const handleAddFarmer = () => {
-    console.log('Add new farmer');
+    navigate('/admin/farmers/add');
   };
 
   const handleEditFarmer = (farmer: any) => {
-    console.log('Edit farmer:', farmer);
+    navigate(`/admin/farmers/edit/${farmer.id}`);
   };
 
   const handleDeleteFarmer = (farmer: any) => {
@@ -103,29 +105,33 @@ const AdminFarmers = () => {
       subtitle="Manage farmer accounts, verifications, and performance"
     >
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
         {farmerStats.map((stat, index) => (
           <StatCard key={index} {...stat} />
         ))}
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
-        <Button onClick={handleAddFarmer} className="flex items-center space-x-2">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4 mb-6 lg:mb-8">
+        <Button onClick={handleAddFarmer} className="flex items-center justify-center space-x-2 text-sm">
           <UserPlus className="h-4 w-4" />
-          <span>Add Farmer</span>
+          <span className="hidden sm:inline">Add Farmer</span>
+          <span className="sm:hidden">Add</span>
         </Button>
-        <Button variant="outline" className="flex items-center space-x-2">
+        <Button variant="outline" className="flex items-center justify-center space-x-2 text-sm">
           <Filter className="h-4 w-4" />
-          <span>Filter Farmers</span>
+          <span className="hidden sm:inline">Filter Farmers</span>
+          <span className="sm:hidden">Filter</span>
         </Button>
-        <Button variant="outline" className="flex items-center space-x-2">
+        <Button variant="outline" className="flex items-center justify-center space-x-2 text-sm">
           <Download className="h-4 w-4" />
-          <span>Export Farmers</span>
+          <span className="hidden sm:inline">Export Farmers</span>
+          <span className="sm:hidden">Export</span>
         </Button>
-        <Button variant="outline" className="flex items-center space-x-2">
+        <Button variant="outline" className="flex items-center justify-center space-x-2 text-sm">
           <CheckCircle className="h-4 w-4" />
-          <span>Bulk Verify</span>
+          <span className="hidden sm:inline">Bulk Verify</span>
+          <span className="sm:hidden">Verify</span>
         </Button>
       </div>
 

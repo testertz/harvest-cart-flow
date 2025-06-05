@@ -1,5 +1,5 @@
-
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
 import DataTable from '@/components/dashboard/DataTable';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,8 @@ import { Package, PackagePlus, Eye, Download, Filter } from 'lucide-react';
 import StatCard from '@/components/dashboard/StatCard';
 
 const AdminProducts = () => {
+  const navigate = useNavigate();
+  
   const [products] = useState([
     {
       id: 1,
@@ -92,11 +94,11 @@ const AdminProducts = () => {
   ];
 
   const handleAddProduct = () => {
-    console.log('Add new product');
+    navigate('/admin/products/add');
   };
 
   const handleEditProduct = (product: any) => {
-    console.log('Edit product:', product);
+    navigate(`/admin/products/edit/${product.id}`);
   };
 
   const handleDeleteProduct = (product: any) => {
@@ -113,29 +115,33 @@ const AdminProducts = () => {
       subtitle="Manage all products, inventory, and pricing"
     >
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
         {productStats.map((stat, index) => (
           <StatCard key={index} {...stat} />
         ))}
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
-        <Button onClick={handleAddProduct} className="flex items-center space-x-2">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4 mb-6 lg:mb-8">
+        <Button onClick={handleAddProduct} className="flex items-center justify-center space-x-2 text-sm">
           <PackagePlus className="h-4 w-4" />
-          <span>Add Product</span>
+          <span className="hidden sm:inline">Add Product</span>
+          <span className="sm:hidden">Add</span>
         </Button>
-        <Button variant="outline" className="flex items-center space-x-2">
+        <Button variant="outline" className="flex items-center justify-center space-x-2 text-sm">
           <Filter className="h-4 w-4" />
-          <span>Filter Products</span>
+          <span className="hidden sm:inline">Filter Products</span>
+          <span className="sm:hidden">Filter</span>
         </Button>
-        <Button variant="outline" className="flex items-center space-x-2">
+        <Button variant="outline" className="flex items-center justify-center space-x-2 text-sm">
           <Download className="h-4 w-4" />
-          <span>Export Products</span>
+          <span className="hidden sm:inline">Export Products</span>
+          <span className="sm:hidden">Export</span>
         </Button>
-        <Button variant="outline" className="flex items-center space-x-2">
+        <Button variant="outline" className="flex items-center justify-center space-x-2 text-sm">
           <Eye className="h-4 w-4" />
-          <span>View Analytics</span>
+          <span className="hidden sm:inline">View Analytics</span>
+          <span className="sm:hidden">Analytics</span>
         </Button>
       </div>
 
