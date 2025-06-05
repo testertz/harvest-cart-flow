@@ -1,10 +1,9 @@
-
 import { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bell, CheckCircle, AlertCircle, Info, X, Trash2, MarkAsRead } from 'lucide-react';
+import { Bell, CheckCircle, AlertCircle, Info, X, Trash2, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Notifications = () => {
@@ -195,7 +194,7 @@ const Notifications = () => {
                           size="sm"
                           className="text-blue-600 hover:text-blue-700"
                         >
-                          <CheckCircle className="h-4 w-4" />
+                          <CheckCircle2 className="h-4 w-4" />
                         </Button>
                       )}
                       <Button

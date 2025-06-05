@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuthStore } from '@/store/authStore';
 import { useCartStore } from '@/store/cartStore';
 import DashboardLayout from '@/components/DashboardLayout';
-import StatCard from '@/components/dashboard/StatCard';
+import QuickStats from '@/components/dashboard/QuickStats';
+import RecentActivity from '@/components/dashboard/RecentActivity';
+import DashboardTabs from '@/components/dashboard/DashboardTabs';
 import DataTable from '@/components/dashboard/DataTable';
 import { 
   ShoppingBag, 
@@ -159,400 +160,275 @@ const UserDashboard = () => {
     }
   ];
 
-  // Order management functions
-  const handleViewOrder = (order: any) => {
-    navigate(`/orders/${order.id}`);
-  };
+  const dashboardTabs = [
+    {
+      value: 'overview',
+      label: 'Overview',
+      content: (
+        <RecentActivity 
+          orders={orders}
+          wishlist={wishlist}
+          onViewOrder={handleViewOrder}
+          onAddToCart={handleAddToCart}
+        />
+      )
+    },
+    {
+      value: 'orders',
+      label: 'Orders',
+      content: (
+        <DataTable
+          title="Order History"
+          data={orders}
+          columns={orderColumns}
+          searchPlaceholder="Search orders..."
+          onView={handleViewOrder}
+          renderCell={(item, key) => {
+            if (key === 'actions') {
+              return (
+                <div className="flex space-x-2">
+                  <Button onClick={() => handleReorder(item)} size="sm" variant="outline">
+                    Reorder
+                  </Button>
+                  {item.status === 'Processing' && (
+                    <Button onClick={() => handleCancelOrder(item)} size="sm" variant="destructive">
+                      Cancel
+                    </Button>
+                  )}
+                </div>
+              );
+            }
+            return undefined;
+          }}
+        />
+      )
+    },
+    {
+      value: 'wishlist',
+      label: 'Wishlist',
+      content: (
+        <Card className="shadow-lg border-0">
+          <CardHeader>
+            <CardTitle>My Wishlist</CardTitle>
+            <CardDescription>Products you've saved for later</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {wishlist.map((item) => (
+                <div key={item.id} className="border rounded-xl p-4 hover:shadow-lg transition-shadow bg-white">
+                  <img src={item.image} alt={item.name} className="w-full h-40 object-cover rounded-lg mb-4" />
+                  <h3 className="font-semibold text-lg mb-2">{item.name}</h3>
+                  <div className="flex items-center mb-2">
+                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                    <span className="text-sm text-gray-600 ml-1">{item.rating}</span>
+                  </div>
+                  <p className="text-green-600 font-bold text-lg mb-4">TZS {item.price.toLocaleString()}</p>
+                  <div className="flex gap-2">
+                    <Button onClick={() => handleAddToCart(item)} size="sm" className="flex-1">Add to Cart</Button>
+                    <Button onClick={() => handleRemoveFromWishlist(item)} variant="outline" size="sm">Remove</Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )
+    },
+    {
+      value: 'addresses',
+      label: 'Addresses',
+      content: (
+        <Card className="shadow-lg border-0">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Delivery Addresses</CardTitle>
+                <CardDescription>Manage your delivery locations</CardDescription>
+              </div>
+              <Button onClick={handleAddAddress}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add New Address
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {addresses.map((address) => (
+                <div key={address.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold">{address.type}</h3>
+                    {address.isDefault && (
+                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Default</span>
+                    )}
+                  </div>
+                  <p className="text-gray-600">{address.address}</p>
+                  <p className="text-gray-600">{address.city}</p>
+                  <div className="flex gap-2 mt-4">
+                    <Button onClick={() => handleEditAddress(address)} variant="outline" size="sm">
+                      <Edit className="h-4 w-4 mr-1" />
+                      Edit
+                    </Button>
+                    <Button onClick={() => handleDeleteAddress(address)} variant="outline" size="sm">
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Delete
+                    </Button>
+                    {!address.isDefault && (
+                      <Button onClick={() => handleSetDefaultAddress(address)} variant="outline" size="sm">
+                        Set Default
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )
+    },
+    {
+      value: 'payments',
+      label: 'Payments',
+      content: (
+        <Card className="shadow-lg border-0">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Payment Methods</CardTitle>
+                <CardDescription>Manage your payment options</CardDescription>
+              </div>
+              <Button onClick={handleAddPaymentMethod}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Payment Method
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {paymentMethods.map((method) => (
+                <div key={method.id} className="border rounded-lg p-4 flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <CreditCard className="h-8 w-8 text-gray-400" />
+                    <div>
+                      <p className="font-medium">{method.type}</p>
+                      <p className="text-gray-600">{method.details}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {method.isDefault && (
+                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Default</span>
+                    )}
+                    <Button onClick={() => handleEditPaymentMethod(method)} variant="outline" size="sm">
+                      <Edit className="h-4 w-4 mr-1" />
+                      Edit
+                    </Button>
+                    <Button onClick={() => handleRemovePaymentMethod(method)} variant="outline" size="sm">
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Remove
+                    </Button>
+                    {!method.isDefault && (
+                      <Button onClick={() => handleSetDefaultPayment(method)} variant="outline" size="sm">
+                        Set Default
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )
+    },
+    {
+      value: 'profile',
+      label: 'Profile',
+      content: (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="shadow-lg border-0">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <User className="h-5 w-5 mr-2" />
+                Personal Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center space-x-3">
+                  <User className="h-5 w-5 text-gray-500" />
+                  <div>
+                    <p className="text-sm text-gray-600">Full Name</p>
+                    <p className="font-medium">{user?.name}</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Mail className="h-5 w-5 text-gray-500" />
+                  <div>
+                    <p className="text-sm text-gray-600">Email</p>
+                    <p className="font-medium">{user?.email}</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Phone className="h-5 w-5 text-gray-500" />
+                  <div>
+                    <p className="text-sm text-gray-600">Phone</p>
+                    <p className="font-medium">+255 123 456 789</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <MapPin className="h-5 w-5 text-gray-500" />
+                  <div>
+                    <p className="text-sm text-gray-600">Location</p>
+                    <p className="font-medium">Dar es Salaam, Tanzania</p>
+                  </div>
+                </div>
+              </div>
+              <Button className="w-full">Edit Profile</Button>
+            </CardContent>
+          </Card>
 
-  const handleReorder = (order: any) => {
-    toast.success(`Items from ${order.id} added to cart`);
-  };
-
-  const handleCancelOrder = (order: any) => {
-    if (order.status === 'Processing') {
-      setOrders(orders.map(o => 
-        o.id === order.id ? { ...o, status: 'Cancelled' } : o
-      ));
-      toast.success('Order cancelled successfully');
-    } else {
-      toast.error('Cannot cancel this order');
+          <Card className="shadow-lg border-0">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Settings className="h-5 w-5 mr-2" />
+                Account Settings
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <Bell className="h-5 w-5 text-gray-500" />
+                  <span>Email Notifications</span>
+                </div>
+                <Button variant="outline" size="sm">Configure</Button>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <Shield className="h-5 w-5 text-gray-500" />
+                  <span>Privacy Settings</span>
+                </div>
+                <Button variant="outline" size="sm">Manage</Button>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <CreditCard className="h-5 w-5 text-gray-500" />
+                  <span>Billing Information</span>
+                </div>
+                <Button variant="outline" size="sm">Update</Button>
+              </div>
+              <Button variant="destructive" className="w-full">Delete Account</Button>
+            </CardContent>
+          </Card>
+        </div>
+      )
     }
-  };
-
-  // Wishlist management functions
-  const handleAddToCart = (item: any) => {
-    addItem(item);
-    toast.success(`${item.name} added to cart`);
-  };
-
-  const handleRemoveFromWishlist = (item: any) => {
-    setWishlist(wishlist.filter(w => w.id !== item.id));
-    toast.success(`${item.name} removed from wishlist`);
-  };
-
-  // Address management functions
-  const handleAddAddress = () => {
-    toast.info('Add address functionality coming soon');
-  };
-
-  const handleEditAddress = (address: any) => {
-    toast.info(`Edit address ${address.type} functionality coming soon`);
-  };
-
-  const handleDeleteAddress = (address: any) => {
-    if (!address.isDefault) {
-      setAddresses(addresses.filter(a => a.id !== address.id));
-      toast.success('Address deleted successfully');
-    } else {
-      toast.error('Cannot delete default address');
-    }
-  };
-
-  const handleSetDefaultAddress = (address: any) => {
-    setAddresses(addresses.map(a => ({
-      ...a,
-      isDefault: a.id === address.id
-    })));
-    toast.success('Default address updated');
-  };
-
-  // Payment method management functions
-  const handleAddPaymentMethod = () => {
-    toast.info('Add payment method functionality coming soon');
-  };
-
-  const handleEditPaymentMethod = (method: any) => {
-    toast.info(`Edit ${method.type} functionality coming soon`);
-  };
-
-  const handleRemovePaymentMethod = (method: any) => {
-    if (!method.isDefault) {
-      setPaymentMethods(paymentMethods.filter(p => p.id !== method.id));
-      toast.success('Payment method removed successfully');
-    } else {
-      toast.error('Cannot remove default payment method');
-    }
-  };
-
-  const handleSetDefaultPayment = (method: any) => {
-    setPaymentMethods(paymentMethods.map(p => ({
-      ...p,
-      isDefault: p.id === method.id
-    })));
-    toast.success('Default payment method updated');
-  };
+  ];
 
   return (
     <DashboardLayout 
       title={`Welcome back, ${user?.name}!`}
       subtitle="Manage your orders, wishlist, and account settings"
     >
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-        {stats.map((stat, index) => (
-          <StatCard key={index} {...stat} />
-        ))}
-      </div>
-
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6 lg:w-fit">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="orders">Orders</TabsTrigger>
-          <TabsTrigger value="wishlist">Wishlist</TabsTrigger>
-          <TabsTrigger value="addresses">Addresses</TabsTrigger>
-          <TabsTrigger value="payments">Payments</TabsTrigger>
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview">
-          {/* ... keep existing code (overview section) */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="shadow-lg border-0">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <ShoppingBag className="h-5 w-5 mr-2 text-blue-600" />
-                  Recent Orders
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {orders.slice(0, 3).map((order) => (
-                    <div key={order.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">{order.id}</p>
-                        <p className="text-sm text-gray-600">{order.products}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-green-600">TZS {order.total.toLocaleString()}</p>
-                        <p className="text-sm text-gray-500">{order.status}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-lg border-0">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Heart className="h-5 w-5 mr-2 text-red-600" />
-                  Wishlist Highlights
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {wishlist.slice(0, 3).map((item) => (
-                    <div key={item.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                      <img src={item.image} alt={item.name} className="w-12 h-12 rounded-lg object-cover" />
-                      <div className="flex-1">
-                        <p className="font-medium">{item.name}</p>
-                        <div className="flex items-center">
-                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                          <span className="text-sm text-gray-600 ml-1">{item.rating}</span>
-                        </div>
-                      </div>
-                      <p className="font-semibold text-green-600">TZS {item.price.toLocaleString()}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="orders">
-          <DataTable
-            title="Order History"
-            data={orders}
-            columns={orderColumns}
-            searchPlaceholder="Search orders..."
-            onView={handleViewOrder}
-            renderCell={(item, key) => {
-              if (key === 'actions') {
-                return (
-                  <div className="flex space-x-2">
-                    <Button onClick={() => handleReorder(item)} size="sm" variant="outline">
-                      Reorder
-                    </Button>
-                    {item.status === 'Processing' && (
-                      <Button onClick={() => handleCancelOrder(item)} size="sm" variant="destructive">
-                        Cancel
-                      </Button>
-                    )}
-                  </div>
-                );
-              }
-              return undefined;
-            }}
-          />
-        </TabsContent>
-
-        <TabsContent value="wishlist">
-          <Card className="shadow-lg border-0">
-            <CardHeader>
-              <CardTitle>My Wishlist</CardTitle>
-              <CardDescription>Products you've saved for later</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {wishlist.map((item) => (
-                  <div key={item.id} className="border rounded-xl p-4 hover:shadow-lg transition-shadow bg-white">
-                    <img src={item.image} alt={item.name} className="w-full h-40 object-cover rounded-lg mb-4" />
-                    <h3 className="font-semibold text-lg mb-2">{item.name}</h3>
-                    <div className="flex items-center mb-2">
-                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                      <span className="text-sm text-gray-600 ml-1">{item.rating}</span>
-                    </div>
-                    <p className="text-green-600 font-bold text-lg mb-4">TZS {item.price.toLocaleString()}</p>
-                    <div className="flex gap-2">
-                      <Button onClick={() => handleAddToCart(item)} size="sm" className="flex-1">Add to Cart</Button>
-                      <Button onClick={() => handleRemoveFromWishlist(item)} variant="outline" size="sm">Remove</Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="addresses">
-          <Card className="shadow-lg border-0">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Delivery Addresses</CardTitle>
-                  <CardDescription>Manage your delivery locations</CardDescription>
-                </div>
-                <Button onClick={handleAddAddress}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add New Address
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {addresses.map((address) => (
-                  <div key={address.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-semibold">{address.type}</h3>
-                      {address.isDefault && (
-                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Default</span>
-                      )}
-                    </div>
-                    <p className="text-gray-600">{address.address}</p>
-                    <p className="text-gray-600">{address.city}</p>
-                    <div className="flex gap-2 mt-4">
-                      <Button onClick={() => handleEditAddress(address)} variant="outline" size="sm">
-                        <Edit className="h-4 w-4 mr-1" />
-                        Edit
-                      </Button>
-                      <Button onClick={() => handleDeleteAddress(address)} variant="outline" size="sm">
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        Delete
-                      </Button>
-                      {!address.isDefault && (
-                        <Button onClick={() => handleSetDefaultAddress(address)} variant="outline" size="sm">
-                          Set Default
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="payments">
-          <Card className="shadow-lg border-0">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Payment Methods</CardTitle>
-                  <CardDescription>Manage your payment options</CardDescription>
-                </div>
-                <Button onClick={handleAddPaymentMethod}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Payment Method
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {paymentMethods.map((method) => (
-                  <div key={method.id} className="border rounded-lg p-4 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <CreditCard className="h-8 w-8 text-gray-400" />
-                      <div>
-                        <p className="font-medium">{method.type}</p>
-                        <p className="text-gray-600">{method.details}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {method.isDefault && (
-                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Default</span>
-                      )}
-                      <Button onClick={() => handleEditPaymentMethod(method)} variant="outline" size="sm">
-                        <Edit className="h-4 w-4 mr-1" />
-                        Edit
-                      </Button>
-                      <Button onClick={() => handleRemovePaymentMethod(method)} variant="outline" size="sm">
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        Remove
-                      </Button>
-                      {!method.isDefault && (
-                        <Button onClick={() => handleSetDefaultPayment(method)} variant="outline" size="sm">
-                          Set Default
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="profile">
-          {/* ... keep existing code (profile section) */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="shadow-lg border-0">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <User className="h-5 w-5 mr-2" />
-                  Personal Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center space-x-3">
-                    <User className="h-5 w-5 text-gray-500" />
-                    <div>
-                      <p className="text-sm text-gray-600">Full Name</p>
-                      <p className="font-medium">{user?.name}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Mail className="h-5 w-5 text-gray-500" />
-                    <div>
-                      <p className="text-sm text-gray-600">Email</p>
-                      <p className="font-medium">{user?.email}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Phone className="h-5 w-5 text-gray-500" />
-                    <div>
-                      <p className="text-sm text-gray-600">Phone</p>
-                      <p className="font-medium">+255 123 456 789</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <MapPin className="h-5 w-5 text-gray-500" />
-                    <div>
-                      <p className="text-sm text-gray-600">Location</p>
-                      <p className="font-medium">Dar es Salaam, Tanzania</p>
-                    </div>
-                  </div>
-                </div>
-                <Button className="w-full">Edit Profile</Button>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-lg border-0">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Settings className="h-5 w-5 mr-2" />
-                  Account Settings
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <Bell className="h-5 w-5 text-gray-500" />
-                    <span>Email Notifications</span>
-                  </div>
-                  <Button variant="outline" size="sm">Configure</Button>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <Shield className="h-5 w-5 text-gray-500" />
-                    <span>Privacy Settings</span>
-                  </div>
-                  <Button variant="outline" size="sm">Manage</Button>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <CreditCard className="h-5 w-5 text-gray-500" />
-                    <span>Billing Information</span>
-                  </div>
-                  <Button variant="outline" size="sm">Update</Button>
-                </div>
-                <Button variant="destructive" className="w-full">Delete Account</Button>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
+      <QuickStats stats={stats} />
+      <DashboardTabs tabs={dashboardTabs} />
     </DashboardLayout>
   );
 };
