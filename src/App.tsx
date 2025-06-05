@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 
@@ -15,6 +16,7 @@ import FarmerDashboard from '@/pages/FarmerDashboard';
 import About from '@/pages/About';
 import Contact from '@/pages/Contact';
 import NotFound from '@/pages/NotFound';
+import Notifications from '@/pages/Notifications';
 
 // Admin Pages
 import AdminUsers from '@/pages/admin/AdminUsers';
@@ -49,6 +51,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/dashboard" element={<UserDashboard />} />
+          <Route path="/notifications" element={<Notifications />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/products" element={<AdminProducts />} />

@@ -1,13 +1,16 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
 import DataTable from '@/components/dashboard/DataTable';
 import { Button } from '@/components/ui/button';
-import { CreditCard, Download, Filter, RefreshCw } from 'lucide-react';
+import { CreditCard, Download, Filter, RefreshCw, Plus } from 'lucide-react';
 import StatCard from '@/components/dashboard/StatCard';
+import { toast } from 'sonner';
 
 const AdminPayments = () => {
-  const [payments] = useState([
+  const navigate = useNavigate();
+  const [payments, setPayments] = useState([
     {
       id: 'PAY-001',
       orderId: 'ORD-001',
@@ -74,16 +77,28 @@ const AdminPayments = () => {
     { key: 'date', title: 'Date', sortable: true }
   ];
 
-  const handleRefreshPayments = () => {
-    console.log('Refresh payments');
+  const handleAddPayment = () => {
+    navigate('/admin/payments/add');
   };
 
   const handleEditPayment = (payment: any) => {
-    console.log('Edit payment:', payment);
+    navigate(`/admin/payments/edit/${payment.id}`);
+  };
+
+  const handleDeletePayment = (payment: any) => {
+    setPayments(payments.filter(p => p.id !== payment.id));
+    toast.success('Payment record deleted successfully');
   };
 
   const handleConfirmPayment = (payment: any) => {
-    console.log('Confirm payment:', payment);
+    setPayments(payments.map(p => 
+      p.id === payment.id ? { ...p, status: 'Completed' } : p
+    ));
+    toast.success('Payment confirmed successfully');
+  };
+
+  const handleRefreshPayments = () => {
+    toast.info('Refreshing payment status...');
   };
 
   return (
@@ -100,7 +115,11 @@ const AdminPayments = () => {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
-        <Button onClick={handleRefreshPayments} className="flex items-center space-x-2">
+        <Button onClick={handleAddPayment} className="flex items-center space-x-2">
+          <Plus className="h-4 w-4" />
+          <span>Add Payment</span>
+        </Button>
+        <Button onClick={handleRefreshPayments} variant="outline" className="flex items-center space-x-2">
           <RefreshCw className="h-4 w-4" />
           <span>Refresh Status</span>
         </Button>
@@ -112,10 +131,6 @@ const AdminPayments = () => {
           <Download className="h-4 w-4" />
           <span>Export Payments</span>
         </Button>
-        <Button variant="outline" className="flex items-center space-x-2">
-          <CreditCard className="h-4 w-4" />
-          <span>Payment Settings</span>
-        </Button>
       </div>
 
       {/* Payments Table */}
@@ -124,7 +139,9 @@ const AdminPayments = () => {
         data={payments}
         columns={paymentColumns}
         searchPlaceholder="Search payments by ID, customer, or transaction..."
+        onAdd={handleAddPayment}
         onEdit={handleEditPayment}
+        onDelete={handleDeletePayment}
         onConfirm={handleConfirmPayment}
       />
     </AdminLayout>

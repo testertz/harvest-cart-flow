@@ -1,5 +1,5 @@
-
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -21,14 +21,19 @@ import {
   Mail,
   Settings,
   Bell,
-  Shield
+  Shield,
+  Plus,
+  Edit,
+  Trash2
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const UserDashboard = () => {
   const { user } = useAuthStore();
-  const { items } = useCartStore();
+  const { items, addItem, removeItem } = useCartStore();
+  const navigate = useNavigate();
 
-  const [orders] = useState([
+  const [orders, setOrders] = useState([
     {
       id: 'ORD-001',
       date: '2024-03-15',
@@ -71,7 +76,7 @@ const UserDashboard = () => {
     }
   ]);
 
-  const [wishlist] = useState([
+  const [wishlist, setWishlist] = useState([
     { id: 1, name: 'Organic Tomatoes', price: 8000, image: '/placeholder.svg', rating: 4.5 },
     { id: 2, name: 'Fresh Avocados', price: 12000, image: '/placeholder.svg', rating: 4.8 },
     { id: 3, name: 'Sweet Potatoes', price: 5000, image: '/placeholder.svg', rating: 4.3 },
@@ -79,7 +84,7 @@ const UserDashboard = () => {
     { id: 5, name: 'Fresh Mangoes', price: 15000, image: '/placeholder.svg', rating: 4.9 }
   ]);
 
-  const [addresses] = useState([
+  const [addresses, setAddresses] = useState([
     {
       id: 1,
       type: 'Home',
@@ -96,7 +101,7 @@ const UserDashboard = () => {
     }
   ]);
 
-  const [paymentMethods] = useState([
+  const [paymentMethods, setPaymentMethods] = useState([
     {
       id: 1,
       type: 'Credit Card',
@@ -154,6 +159,89 @@ const UserDashboard = () => {
     }
   ];
 
+  // Order management functions
+  const handleViewOrder = (order: any) => {
+    navigate(`/orders/${order.id}`);
+  };
+
+  const handleReorder = (order: any) => {
+    toast.success(`Items from ${order.id} added to cart`);
+  };
+
+  const handleCancelOrder = (order: any) => {
+    if (order.status === 'Processing') {
+      setOrders(orders.map(o => 
+        o.id === order.id ? { ...o, status: 'Cancelled' } : o
+      ));
+      toast.success('Order cancelled successfully');
+    } else {
+      toast.error('Cannot cancel this order');
+    }
+  };
+
+  // Wishlist management functions
+  const handleAddToCart = (item: any) => {
+    addItem(item);
+    toast.success(`${item.name} added to cart`);
+  };
+
+  const handleRemoveFromWishlist = (item: any) => {
+    setWishlist(wishlist.filter(w => w.id !== item.id));
+    toast.success(`${item.name} removed from wishlist`);
+  };
+
+  // Address management functions
+  const handleAddAddress = () => {
+    toast.info('Add address functionality coming soon');
+  };
+
+  const handleEditAddress = (address: any) => {
+    toast.info(`Edit address ${address.type} functionality coming soon`);
+  };
+
+  const handleDeleteAddress = (address: any) => {
+    if (!address.isDefault) {
+      setAddresses(addresses.filter(a => a.id !== address.id));
+      toast.success('Address deleted successfully');
+    } else {
+      toast.error('Cannot delete default address');
+    }
+  };
+
+  const handleSetDefaultAddress = (address: any) => {
+    setAddresses(addresses.map(a => ({
+      ...a,
+      isDefault: a.id === address.id
+    })));
+    toast.success('Default address updated');
+  };
+
+  // Payment method management functions
+  const handleAddPaymentMethod = () => {
+    toast.info('Add payment method functionality coming soon');
+  };
+
+  const handleEditPaymentMethod = (method: any) => {
+    toast.info(`Edit ${method.type} functionality coming soon`);
+  };
+
+  const handleRemovePaymentMethod = (method: any) => {
+    if (!method.isDefault) {
+      setPaymentMethods(paymentMethods.filter(p => p.id !== method.id));
+      toast.success('Payment method removed successfully');
+    } else {
+      toast.error('Cannot remove default payment method');
+    }
+  };
+
+  const handleSetDefaultPayment = (method: any) => {
+    setPaymentMethods(paymentMethods.map(p => ({
+      ...p,
+      isDefault: p.id === method.id
+    })));
+    toast.success('Default payment method updated');
+  };
+
   return (
     <DashboardLayout 
       title={`Welcome back, ${user?.name}!`}
@@ -177,6 +265,7 @@ const UserDashboard = () => {
         </TabsList>
 
         <TabsContent value="overview">
+          {/* ... keep existing code (overview section) */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="shadow-lg border-0">
               <CardHeader>
@@ -237,7 +326,24 @@ const UserDashboard = () => {
             data={orders}
             columns={orderColumns}
             searchPlaceholder="Search orders..."
-            onEdit={(order) => console.log('Edit order:', order)}
+            onView={handleViewOrder}
+            renderCell={(item, key) => {
+              if (key === 'actions') {
+                return (
+                  <div className="flex space-x-2">
+                    <Button onClick={() => handleReorder(item)} size="sm" variant="outline">
+                      Reorder
+                    </Button>
+                    {item.status === 'Processing' && (
+                      <Button onClick={() => handleCancelOrder(item)} size="sm" variant="destructive">
+                        Cancel
+                      </Button>
+                    )}
+                  </div>
+                );
+              }
+              return undefined;
+            }}
           />
         </TabsContent>
 
@@ -259,8 +365,8 @@ const UserDashboard = () => {
                     </div>
                     <p className="text-green-600 font-bold text-lg mb-4">TZS {item.price.toLocaleString()}</p>
                     <div className="flex gap-2">
-                      <Button size="sm" className="flex-1">Add to Cart</Button>
-                      <Button variant="outline" size="sm">Remove</Button>
+                      <Button onClick={() => handleAddToCart(item)} size="sm" className="flex-1">Add to Cart</Button>
+                      <Button onClick={() => handleRemoveFromWishlist(item)} variant="outline" size="sm">Remove</Button>
                     </div>
                   </div>
                 ))}
@@ -277,7 +383,10 @@ const UserDashboard = () => {
                   <CardTitle>Delivery Addresses</CardTitle>
                   <CardDescription>Manage your delivery locations</CardDescription>
                 </div>
-                <Button>Add New Address</Button>
+                <Button onClick={handleAddAddress}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add New Address
+                </Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -293,8 +402,19 @@ const UserDashboard = () => {
                     <p className="text-gray-600">{address.address}</p>
                     <p className="text-gray-600">{address.city}</p>
                     <div className="flex gap-2 mt-4">
-                      <Button variant="outline" size="sm">Edit</Button>
-                      <Button variant="outline" size="sm">Delete</Button>
+                      <Button onClick={() => handleEditAddress(address)} variant="outline" size="sm">
+                        <Edit className="h-4 w-4 mr-1" />
+                        Edit
+                      </Button>
+                      <Button onClick={() => handleDeleteAddress(address)} variant="outline" size="sm">
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Delete
+                      </Button>
+                      {!address.isDefault && (
+                        <Button onClick={() => handleSetDefaultAddress(address)} variant="outline" size="sm">
+                          Set Default
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -311,7 +431,10 @@ const UserDashboard = () => {
                   <CardTitle>Payment Methods</CardTitle>
                   <CardDescription>Manage your payment options</CardDescription>
                 </div>
-                <Button>Add Payment Method</Button>
+                <Button onClick={handleAddPaymentMethod}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Payment Method
+                </Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -329,8 +452,19 @@ const UserDashboard = () => {
                       {method.isDefault && (
                         <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Default</span>
                       )}
-                      <Button variant="outline" size="sm">Edit</Button>
-                      <Button variant="outline" size="sm">Remove</Button>
+                      <Button onClick={() => handleEditPaymentMethod(method)} variant="outline" size="sm">
+                        <Edit className="h-4 w-4 mr-1" />
+                        Edit
+                      </Button>
+                      <Button onClick={() => handleRemovePaymentMethod(method)} variant="outline" size="sm">
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Remove
+                      </Button>
+                      {!method.isDefault && (
+                        <Button onClick={() => handleSetDefaultPayment(method)} variant="outline" size="sm">
+                          Set Default
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -340,6 +474,7 @@ const UserDashboard = () => {
         </TabsContent>
 
         <TabsContent value="profile">
+          {/* ... keep existing code (profile section) */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="shadow-lg border-0">
               <CardHeader>

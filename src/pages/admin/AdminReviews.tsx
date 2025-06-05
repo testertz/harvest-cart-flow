@@ -1,13 +1,16 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
 import DataTable from '@/components/dashboard/DataTable';
 import { Button } from '@/components/ui/button';
-import { Star, MessageSquare, Download, Filter, Eye } from 'lucide-react';
+import { Star, MessageSquare, Download, Filter, Eye, Plus } from 'lucide-react';
 import StatCard from '@/components/dashboard/StatCard';
+import { toast } from 'sonner';
 
 const AdminReviews = () => {
-  const [reviews] = useState([
+  const navigate = useNavigate();
+  const [reviews, setReviews] = useState([
     {
       id: 1,
       product: 'Organic Tomatoes',
@@ -74,16 +77,28 @@ const AdminReviews = () => {
     { key: 'date', title: 'Date', sortable: true }
   ];
 
+  const handleAddReview = () => {
+    navigate('/admin/reviews/add');
+  };
+
   const handleEditReview = (review: any) => {
-    console.log('Edit review:', review);
+    navigate(`/admin/reviews/edit/${review.id}`);
   };
 
   const handleDeleteReview = (review: any) => {
-    console.log('Delete review:', review);
+    setReviews(reviews.filter(r => r.id !== review.id));
+    toast.success('Review deleted successfully');
   };
 
   const handleVerifyReview = (review: any) => {
-    console.log('Verify review:', review);
+    setReviews(reviews.map(r => 
+      r.id === review.id ? { ...r, status: 'Published' } : r
+    ));
+    toast.success('Review verified and published');
+  };
+
+  const handleViewReview = (review: any) => {
+    navigate(`/admin/reviews/view/${review.id}`);
   };
 
   return (
@@ -100,7 +115,11 @@ const AdminReviews = () => {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
-        <Button className="flex items-center space-x-2">
+        <Button onClick={handleAddReview} className="flex items-center space-x-2">
+          <Plus className="h-4 w-4" />
+          <span>Add Review</span>
+        </Button>
+        <Button variant="outline" className="flex items-center space-x-2">
           <Eye className="h-4 w-4" />
           <span>Review Analytics</span>
         </Button>
@@ -112,10 +131,6 @@ const AdminReviews = () => {
           <Download className="h-4 w-4" />
           <span>Export Reviews</span>
         </Button>
-        <Button variant="outline" className="flex items-center space-x-2">
-          <MessageSquare className="h-4 w-4" />
-          <span>Moderate Reviews</span>
-        </Button>
       </div>
 
       {/* Reviews Table */}
@@ -124,8 +139,10 @@ const AdminReviews = () => {
         data={reviews}
         columns={reviewColumns}
         searchPlaceholder="Search reviews by product, customer, or content..."
+        onAdd={handleAddReview}
         onEdit={handleEditReview}
         onDelete={handleDeleteReview}
+        onView={handleViewReview}
         onVerify={handleVerifyReview}
       />
     </AdminLayout>

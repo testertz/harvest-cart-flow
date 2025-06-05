@@ -1,13 +1,16 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Download, Calendar, TrendingUp } from 'lucide-react';
+import { FileText, Download, Calendar, TrendingUp, Plus } from 'lucide-react';
 import StatCard from '@/components/dashboard/StatCard';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { toast } from 'sonner';
 
 const AdminReports = () => {
+  const navigate = useNavigate();
   const [salesData] = useState([
     { month: 'Jan', sales: 2400000, orders: 180 },
     { month: 'Feb', sales: 1800000, orders: 145 },
@@ -15,6 +18,12 @@ const AdminReports = () => {
     { month: 'Apr', sales: 2800000, orders: 195 },
     { month: 'May', sales: 3600000, orders: 245 },
     { month: 'Jun', sales: 4200000, orders: 280 }
+  ]);
+
+  const [reports, setReports] = useState([
+    { id: 1, name: 'Monthly Sales Report', type: 'Sales', status: 'Completed', date: '2024-03-15' },
+    { id: 2, name: 'User Activity Report', type: 'User', status: 'In Progress', date: '2024-03-14' },
+    { id: 3, name: 'Financial Summary', type: 'Financial', status: 'Completed', date: '2024-03-13' }
   ]);
 
   const reportStats = [
@@ -50,16 +59,28 @@ const AdminReports = () => {
     }
   ];
 
-  const handleGenerateReport = () => {
-    console.log('Generate new report');
+  const handleGenerateReport = (type: string) => {
+    const newReport = {
+      id: reports.length + 1,
+      name: `${type} Report - ${new Date().toLocaleDateString()}`,
+      type,
+      status: 'In Progress',
+      date: new Date().toISOString().split('T')[0]
+    };
+    setReports([...reports, newReport]);
+    toast.success(`${type} report generation started`);
   };
 
   const handleScheduleReport = () => {
-    console.log('Schedule report');
+    toast.info('Report scheduling coming soon');
   };
 
-  const handleDownloadReport = () => {
-    console.log('Download report');
+  const handleDownloadReport = (reportId: number) => {
+    toast.success('Report downloaded successfully');
+  };
+
+  const handleCreateCustomReport = () => {
+    navigate('/admin/reports/create');
   };
 
   return (
@@ -76,15 +97,15 @@ const AdminReports = () => {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
-        <Button onClick={handleGenerateReport} className="flex items-center space-x-2">
-          <FileText className="h-4 w-4" />
-          <span>Generate Report</span>
+        <Button onClick={handleCreateCustomReport} className="flex items-center space-x-2">
+          <Plus className="h-4 w-4" />
+          <span>Create Custom Report</span>
         </Button>
         <Button variant="outline" onClick={handleScheduleReport} className="flex items-center space-x-2">
           <Calendar className="h-4 w-4" />
           <span>Schedule Report</span>
         </Button>
-        <Button variant="outline" onClick={handleDownloadReport} className="flex items-center space-x-2">
+        <Button variant="outline" className="flex items-center space-x-2">
           <Download className="h-4 w-4" />
           <span>Download Reports</span>
         </Button>
@@ -134,7 +155,7 @@ const AdminReports = () => {
       </div>
 
       {/* Report Types */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <Card className="shadow-lg border-0">
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -144,7 +165,7 @@ const AdminReports = () => {
           </CardHeader>
           <CardContent>
             <p className="text-gray-600 mb-4">Comprehensive sales analysis and performance metrics</p>
-            <Button className="w-full">Generate Sales Report</Button>
+            <Button onClick={() => handleGenerateReport('Sales')} className="w-full">Generate Sales Report</Button>
           </CardContent>
         </Card>
 
@@ -157,7 +178,7 @@ const AdminReports = () => {
           </CardHeader>
           <CardContent>
             <p className="text-gray-600 mb-4">User activity, registration, and engagement metrics</p>
-            <Button className="w-full">Generate User Report</Button>
+            <Button onClick={() => handleGenerateReport('User')} className="w-full">Generate User Report</Button>
           </CardContent>
         </Card>
 
@@ -170,10 +191,42 @@ const AdminReports = () => {
           </CardHeader>
           <CardContent>
             <p className="text-gray-600 mb-4">Revenue, payments, and financial performance analysis</p>
-            <Button className="w-full">Generate Financial Report</Button>
+            <Button onClick={() => handleGenerateReport('Financial')} className="w-full">Generate Financial Report</Button>
           </CardContent>
         </Card>
       </div>
+
+      {/* Recent Reports */}
+      <Card className="shadow-lg border-0">
+        <CardHeader>
+          <CardTitle>Recent Reports</CardTitle>
+          <CardDescription>Your latest generated reports</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {reports.map((report) => (
+              <div key={report.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <h3 className="font-medium">{report.name}</h3>
+                  <p className="text-sm text-gray-600">{report.type} • {report.date}</p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className={`px-2 py-1 text-xs rounded ${
+                    report.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {report.status}
+                  </span>
+                  {report.status === 'Completed' && (
+                    <Button onClick={() => handleDownloadReport(report.id)} size="sm" variant="outline">
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </AdminLayout>
   );
 };

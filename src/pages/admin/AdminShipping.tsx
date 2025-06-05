@@ -1,13 +1,16 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
 import DataTable from '@/components/dashboard/DataTable';
 import { Button } from '@/components/ui/button';
-import { Truck, Package, Download, Filter, MapPin } from 'lucide-react';
+import { Truck, Package, Download, Filter, MapPin, Plus } from 'lucide-react';
 import StatCard from '@/components/dashboard/StatCard';
+import { toast } from 'sonner';
 
 const AdminShipping = () => {
-  const [shipments] = useState([
+  const navigate = useNavigate();
+  const [shipments, setShipments] = useState([
     {
       id: 'SHIP-001',
       orderId: 'ORD-001',
@@ -78,15 +81,27 @@ const AdminShipping = () => {
   ];
 
   const handleAddShipment = () => {
-    console.log('Add new shipment');
+    navigate('/admin/shipping/add');
   };
 
   const handleEditShipment = (shipment: any) => {
-    console.log('Edit shipment:', shipment);
+    navigate(`/admin/shipping/edit/${shipment.id}`);
+  };
+
+  const handleDeleteShipment = (shipment: any) => {
+    setShipments(shipments.filter(s => s.id !== shipment.id));
+    toast.success('Shipment deleted successfully');
   };
 
   const handleTrackShipment = (shipment: any) => {
-    console.log('Track shipment:', shipment);
+    toast.info(`Tracking shipment ${shipment.trackingNumber}`);
+  };
+
+  const handleUpdateStatus = (shipment: any, newStatus: string) => {
+    setShipments(shipments.map(s => 
+      s.id === shipment.id ? { ...s, status: newStatus } : s
+    ));
+    toast.success(`Shipment status updated to ${newStatus}`);
   };
 
   return (
@@ -104,7 +119,7 @@ const AdminShipping = () => {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
         <Button onClick={handleAddShipment} className="flex items-center space-x-2">
-          <Truck className="h-4 w-4" />
+          <Plus className="h-4 w-4" />
           <span>Create Shipment</span>
         </Button>
         <Button variant="outline" className="flex items-center space-x-2">
@@ -129,6 +144,7 @@ const AdminShipping = () => {
         searchPlaceholder="Search shipments by ID, customer, or tracking number..."
         onAdd={handleAddShipment}
         onEdit={handleEditShipment}
+        onDelete={handleDeleteShipment}
         renderCell={(item, key) => {
           if (key === 'trackingNumber') {
             return (

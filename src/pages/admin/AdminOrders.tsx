@@ -1,13 +1,16 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
 import DataTable from '@/components/dashboard/DataTable';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, Plus, Download, Filter, CheckCircle } from 'lucide-react';
+import { ShoppingBag, Plus, Download, Filter, CheckCircle, Eye } from 'lucide-react';
 import StatCard from '@/components/dashboard/StatCard';
+import { toast } from 'sonner';
 
 const AdminOrders = () => {
-  const [orders] = useState([
+  const navigate = useNavigate();
+  const [orders, setOrders] = useState([
     {
       id: 'ORD-001',
       customer: 'John Mwangi',
@@ -89,19 +92,27 @@ const AdminOrders = () => {
   ];
 
   const handleAddOrder = () => {
-    console.log('Add new order');
+    navigate('/admin/orders/add');
   };
 
   const handleEditOrder = (order: any) => {
-    console.log('Edit order:', order);
+    navigate(`/admin/orders/edit/${order.id}`);
   };
 
   const handleDeleteOrder = (order: any) => {
-    console.log('Delete order:', order);
+    setOrders(orders.filter(o => o.id !== order.id));
+    toast.success('Order deleted successfully');
+  };
+
+  const handleViewOrder = (order: any) => {
+    navigate(`/admin/orders/view/${order.id}`);
   };
 
   const handleConfirmOrder = (order: any) => {
-    console.log('Confirm order:', order);
+    setOrders(orders.map(o => 
+      o.id === order.id ? { ...o, status: 'Confirmed' } : o
+    ));
+    toast.success('Order confirmed successfully');
   };
 
   return (
@@ -145,6 +156,7 @@ const AdminOrders = () => {
         onAdd={handleAddOrder}
         onEdit={handleEditOrder}
         onDelete={handleDeleteOrder}
+        onView={handleViewOrder}
         onConfirm={handleConfirmOrder}
       />
     </AdminLayout>
