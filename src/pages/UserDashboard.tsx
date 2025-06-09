@@ -125,12 +125,12 @@ const UserDashboard = () => {
 
   const handleAddToCart = (item: any) => {
     addItem({ 
-      id: item.id, 
+      id: item.id.toString(), 
       name: item.name, 
       price: item.price, 
       image: item.image,
-      quantity: 1,
-      farmerId: 1
+      seller: 'Local Farmer',
+      unit: 'per kg'
     });
     toast.success(`${item.name} added to cart`);
   };
