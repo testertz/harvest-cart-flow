@@ -117,6 +117,95 @@ const UserDashboard = () => {
     }
   ]);
 
+  // Handler functions
+  const handleViewOrder = (order: any) => {
+    toast.success(`Viewing order ${order.id}`);
+    console.log('View order:', order);
+  };
+
+  const handleAddToCart = (item: any) => {
+    addItem({ 
+      id: item.id, 
+      name: item.name, 
+      price: item.price, 
+      image: item.image,
+      quantity: 1,
+      farmerId: 1
+    });
+    toast.success(`${item.name} added to cart`);
+  };
+
+  const handleReorder = (order: any) => {
+    toast.success(`Reordering ${order.id}`);
+    console.log('Reorder:', order);
+  };
+
+  const handleCancelOrder = (order: any) => {
+    setOrders(prev => prev.map(o => 
+      o.id === order.id ? { ...o, status: 'Cancelled' } : o
+    ));
+    toast.success(`Order ${order.id} cancelled`);
+  };
+
+  const handleRemoveFromWishlist = (item: any) => {
+    setWishlist(prev => prev.filter(w => w.id !== item.id));
+    toast.success(`${item.name} removed from wishlist`);
+  };
+
+  const handleAddAddress = () => {
+    toast.info('Add address form would open here');
+    console.log('Add new address');
+  };
+
+  const handleEditAddress = (address: any) => {
+    toast.info(`Edit address form for ${address.type} would open here`);
+    console.log('Edit address:', address);
+  };
+
+  const handleDeleteAddress = (address: any) => {
+    if (!address.isDefault) {
+      setAddresses(prev => prev.filter(a => a.id !== address.id));
+      toast.success(`${address.type} address deleted`);
+    } else {
+      toast.error('Cannot delete default address');
+    }
+  };
+
+  const handleSetDefaultAddress = (address: any) => {
+    setAddresses(prev => prev.map(a => ({
+      ...a,
+      isDefault: a.id === address.id
+    })));
+    toast.success(`${address.type} set as default address`);
+  };
+
+  const handleAddPaymentMethod = () => {
+    toast.info('Add payment method form would open here');
+    console.log('Add new payment method');
+  };
+
+  const handleEditPaymentMethod = (method: any) => {
+    toast.info(`Edit ${method.type} form would open here`);
+    console.log('Edit payment method:', method);
+  };
+
+  const handleRemovePaymentMethod = (method: any) => {
+    if (!method.isDefault) {
+      setPaymentMethods(prev => prev.filter(p => p.id !== method.id));
+      toast.success(`${method.type} removed`);
+    } else {
+      toast.error('Cannot remove default payment method');
+    }
+  };
+
+  const handleSetDefaultPayment = (method: any) => {
+    setPaymentMethods(prev => prev.map(p => ({
+      ...p,
+      isDefault: p.id === method.id
+    })));
+    toast.success(`${method.type} set as default`);
+  };
+
   const orderColumns = [
     { key: 'id', title: 'Order ID', sortable: true },
     { key: 'date', title: 'Date', sortable: true },
