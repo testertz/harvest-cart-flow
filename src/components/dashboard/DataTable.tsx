@@ -138,17 +138,17 @@ const DataTable = ({
       const getStatusColor = (status: string) => {
         switch (status.toLowerCase()) {
           case 'active': case 'delivered': case 'approved': case 'verified': case 'completed': case 'published':
-            return 'bg-green-100 text-green-800';
+            return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
           case 'pending': case 'processing':
-            return 'bg-yellow-100 text-yellow-800';
+            return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
           case 'inactive': case 'cancelled': case 'rejected': case 'failed':
-            return 'bg-red-100 text-red-800';
+            return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
           case 'shipped': case 'in transit':
-            return 'bg-blue-100 text-blue-800';
+            return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
           case 'low stock':
-            return 'bg-orange-100 text-orange-800';
+            return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
           default:
-            return 'bg-gray-100 text-gray-800';
+            return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
         }
       };
       
@@ -179,68 +179,65 @@ const DataTable = ({
 
   return (
     <Card className="shadow-lg border-0">
-      <CardHeader className="bg-white border-b border-gray-100">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between space-y-4 lg:space-y-0">
-          <CardTitle className="text-xl font-semibold text-gray-900">{title}</CardTitle>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
-            <div className="relative flex-1 sm:flex-none">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder={searchPlaceholder}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-full sm:w-64"
-              />
+      <CardHeader className="pb-4">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
+          <div>
+            <CardTitle className="text-xl font-bold">{title}</CardTitle>
+          </div>
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full lg:w-auto">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder={searchPlaceholder}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 w-full sm:w-80"
+                />
+              </div>
+              {statusOptions.length > 0 && (
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="px-3 py-2 border border-input rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring w-full sm:w-32"
+                >
+                  <option value="all">All Status</option>
+                  {statusOptions.map((status) => (
+                    <option key={status} value={status.toLowerCase()}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
-            
-            {statusOptions.length > 0 && (
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md bg-white text-sm"
-              >
-                <option value="all">All Status</option>
-                {statusOptions.map(status => (
-                  <option key={status} value={status}>{status}</option>
-                ))}
-              </select>
-            )}
-            
-            <div className="flex space-x-2">
-              <Button variant="outline" size="sm" className="hidden sm:flex">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleExport}>
-                <Download className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Export</span>
-              </Button>
+            <div className="flex flex-wrap gap-2">
               {onAdd && (
-                <Button onClick={handleAdd} size="sm">
+                <Button onClick={handleAdd} className="whitespace-nowrap flex-shrink-0">
                   <Plus className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Add New</span>
-                  <span className="sm:hidden">Add</span>
+                  Add New
                 </Button>
               )}
+              <Button variant="outline" onClick={handleExport} className="whitespace-nowrap flex-shrink-0">
+                <Download className="h-4 w-4 mr-2" />
+                Export
+              </Button>
             </div>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
+      <CardContent>
+        <div className="rounded-md border overflow-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-50">
+              <TableRow>
                 {columns.map((column) => (
                   <TableHead 
-                    key={column.key}
-                    className={`font-semibold text-gray-700 px-2 lg:px-4 ${
-                      column.sortable ? 'cursor-pointer hover:bg-gray-100' : ''
-                    }`}
+                    key={column.key} 
+                    className={`${column.sortable ? 'cursor-pointer hover:bg-muted/50' : ''} whitespace-nowrap font-semibold`}
                     onClick={() => column.sortable && handleSort(column.key)}
                   >
-                    <div className="flex items-center">
-                      <span className="text-xs lg:text-sm">{column.title}</span>
+                    <div className="flex items-center space-x-1">
+                      <span>{column.title}</span>
                       {column.sortable && sortColumn === column.key && (
                         <span className="ml-1">
                           {sortDirection === 'asc' ? '↑' : '↓'}
@@ -249,69 +246,89 @@ const DataTable = ({
                     </div>
                   </TableHead>
                 ))}
-                {(onEdit || onDelete || onVerify || onConfirm || onView) && (
-                  <TableHead className="font-semibold text-gray-700 px-2 lg:px-4">
-                    <span className="text-xs lg:text-sm">Actions</span>
-                  </TableHead>
-                )}
+                <TableHead className="text-right whitespace-nowrap font-semibold">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sortedData.map((item, index) => (
-                <TableRow key={index} className="hover:bg-gray-50 transition-colors">
-                  {columns.map((column) => (
-                    <TableCell key={column.key} className="py-2 lg:py-4 px-2 lg:px-4">
-                      <div className="text-xs lg:text-sm">
-                        {renderCell ? renderCell(item, column.key) || defaultRenderCell(item, column.key) : defaultRenderCell(item, column.key)}
-                      </div>
-                    </TableCell>
-                  ))}
-                  {(onEdit || onDelete || onVerify || onConfirm || onView) && (
-                    <TableCell className="py-2 lg:py-4 px-2 lg:px-4">
-                      <div className="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-2">
+              {sortedData.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length + 1} className="text-center py-8 text-muted-foreground">
+                    No data found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                sortedData.map((item, index) => (
+                  <TableRow key={item.id || index} className="hover:bg-muted/50">
+                    {columns.map((column) => (
+                      <TableCell key={column.key} className="whitespace-nowrap">
+                        {renderCell ? renderCell(item, column.key) : defaultRenderCell(item, column.key)}
+                      </TableCell>
+                    ))}
+                    <TableCell className="text-right">
+                      <div className="flex justify-end space-x-1">
                         {onView && (
-                          <Button variant="outline" size="sm" onClick={() => handleView(item)} className="text-blue-600 hover:text-blue-700 text-xs">
-                            <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                            <span className="hidden sm:inline">View</span>
-                          </Button>
-                        )}
-                        {onConfirm && item.status === 'Pending' && (
-                          <Button variant="outline" size="sm" onClick={() => handleConfirm(item)} className="text-green-600 hover:text-green-700 text-xs">
-                            <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                            <span className="hidden sm:inline">Confirm</span>
-                          </Button>
-                        )}
-                        {onVerify && item.status === 'Pending' && (
-                          <Button variant="outline" size="sm" onClick={() => handleVerify(item)} className="text-blue-600 hover:text-blue-700 text-xs">
-                            <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                            <span className="hidden sm:inline">Verify</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleView(item)}
+                            className="h-8 w-8 p-0 hover:bg-muted"
+                            title="View"
+                          >
+                            <Eye className="h-4 w-4" />
                           </Button>
                         )}
                         {onEdit && (
-                          <Button variant="outline" size="sm" onClick={() => handleEdit(item)} className="text-xs">
-                            <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                            <span className="hidden sm:inline">Edit</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEdit(item)}
+                            className="h-8 w-8 p-0 hover:bg-muted"
+                            title="Edit"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {onVerify && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleVerify(item)}
+                            className="h-8 w-8 p-0 hover:bg-muted"
+                            title="Verify"
+                          >
+                            <CheckCircle className="h-4 w-4 text-green-600" />
+                          </Button>
+                        )}
+                        {onConfirm && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleConfirm(item)}
+                            className="h-8 w-8 p-0 hover:bg-muted"
+                            title="Confirm"
+                          >
+                            <CheckCircle className="h-4 w-4 text-blue-600" />
                           </Button>
                         )}
                         {onDelete && (
-                          <Button variant="destructive" size="sm" onClick={() => handleDelete(item)} className="text-xs">
-                            <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                            <span className="hidden sm:inline">Delete</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(item)}
+                            className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                            title="Delete"
+                          >
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         )}
                       </div>
                     </TableCell>
-                  )}
-                </TableRow>
-              ))}
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
-        {sortedData.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500">No data found</p>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

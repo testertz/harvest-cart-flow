@@ -35,6 +35,10 @@ import AdminSupport from '@/pages/admin/AdminSupport';
 import AddUserForm from '@/pages/admin/forms/AddUserForm';
 import AddProductForm from '@/pages/admin/forms/AddProductForm';
 import AddFarmerForm from '@/pages/admin/forms/AddFarmerForm';
+import AddOrderForm from '@/pages/admin/forms/AddOrderForm';
+import AddPaymentForm from '@/pages/admin/forms/AddPaymentForm';
+import AddReviewForm from '@/pages/admin/forms/AddReviewForm';
+import AddShipmentForm from '@/pages/admin/forms/AddShipmentForm';
 
 function App() {
   return (
@@ -73,6 +77,14 @@ function App() {
           <Route path="/admin/products/edit/:id" element={<AddProductForm />} />
           <Route path="/admin/farmers/add" element={<AddFarmerForm />} />
           <Route path="/admin/farmers/edit/:id" element={<AddFarmerForm />} />
+          <Route path="/admin/orders/add" element={<AddOrderForm />} />
+          <Route path="/admin/orders/edit/:id" element={<AddOrderForm />} />
+          <Route path="/admin/payments/add" element={<AddPaymentForm />} />
+          <Route path="/admin/payments/edit/:id" element={<AddPaymentForm />} />
+          <Route path="/admin/reviews/add" element={<AddReviewForm />} />
+          <Route path="/admin/reviews/edit/:id" element={<AddReviewForm />} />
+          <Route path="/admin/shipping/add" element={<AddShipmentForm />} />
+          <Route path="/admin/shipping/edit/:id" element={<AddShipmentForm />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
