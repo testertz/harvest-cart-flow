@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CreditCard, MapPin, User, Phone, Mail, Check } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,6 +14,7 @@ import { useCartStore } from '@/store/cartStore';
 import { toast } from '@/hooks/use-toast';
 
 const Checkout = () => {
+  const navigate = useNavigate();
   const { items, getTotalPrice, clearCart } = useCartStore();
   const [formData, setFormData] = useState({
     firstName: '',
@@ -52,17 +53,38 @@ const Checkout = () => {
     e.preventDefault();
     setIsProcessing(true);
 
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    // Validate form data
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.address || !formData.city || !formData.region) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+      });
+      setIsProcessing(false);
+      return;
+    }
+
+    // Prepare order data for payment page
+    const orderData = {
+      items,
+      subtotal,
+      shipping,
+      tax,
+      total,
+      customerInfo: {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address,
+        city: formData.city,
+        region: formData.region,
+      }
+    };
 
     setIsProcessing(false);
-    setOrderComplete(true);
-    clearCart();
     
-    toast({
-      title: "Order Placed Successfully!",
-      description: "Thank you for your purchase. You will receive a confirmation email shortly.",
-    });
+    // Redirect to payment page with order data
+    navigate('/payment', { state: { orderData } });
   };
 
   if (items.length === 0 && !orderComplete) {
