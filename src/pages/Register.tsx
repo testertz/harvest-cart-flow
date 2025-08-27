@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuthStore } from '@/store/authStore';
-import { toast } from 'sonner';
+import { toast } from '@/hooks/use-toast';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 
@@ -30,7 +30,11 @@ const Register = () => {
     setIsLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
+      toast({
+        title: "Registration failed",
+        description: "Passwords do not match",
+        variant: "destructive"
+      });
       setIsLoading(false);
       return;
     }
@@ -47,7 +51,10 @@ const Register = () => {
       };
 
       login(user);
-      toast.success('Account created successfully!');
+      toast({
+        title: "Account created successfully!",
+        description: "Welcome to AgriMarket Tanzania."
+      });
       
       if (formData.role === 'admin') {
         navigate('/admin/dashboard');
@@ -55,7 +62,11 @@ const Register = () => {
         navigate('/dashboard');
       }
     } catch (error) {
-      toast.error('Registration failed. Please try again.');
+      toast({
+        title: "Registration failed",
+        description: "Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }

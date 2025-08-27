@@ -119,7 +119,7 @@ const Index = () => {
                   transition={{ delay: 0.6 }}
                 >
                   <Link to="/marketplace">
-                    <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg">
+                    <Button size="lg" className="bg-brand hover:bg-primary-dark text-primary-foreground px-8 py-4 text-lg">
                       {slide.cta} <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
@@ -158,7 +158,7 @@ const Index = () => {
       </div>
 
       {/* Stats Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-surface">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
@@ -169,7 +169,7 @@ const Index = () => {
                 transition={{ delay: index * 0.1 }}
                 className="text-center"
               >
-                <div className="text-3xl lg:text-4xl font-bold text-green-600 mb-2">
+                <div className="text-3xl lg:text-4xl font-bold text-brand mb-2">
                   {stat.value}
                 </div>
                 <div className="text-gray-600">{stat.label}</div>
@@ -215,7 +215,7 @@ const Index = () => {
 
           <div className="text-center mt-8">
             <Link to="/marketplace">
-              <Button size="lg" variant="outline" className="px-8">
+              <Button size="lg" variant="outline" className="px-8 border-brand text-brand hover:bg-brand hover:text-primary-foreground">
                 View All Products <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
@@ -224,7 +224,7 @@ const Index = () => {
       </section>
 
       {/* Why Choose Us */}
-      <section className="py-16 bg-green-50">
+      <section className="py-16 bg-surface">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -239,17 +239,17 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                icon: <Leaf className="h-12 w-12 text-green-600" />,
+                icon: <Leaf className="h-12 w-12 text-brand" />,
                 title: "Fresh & Organic",
                 description: "Products sourced directly from farms ensure maximum freshness and quality."
               },
               {
-                icon: <Star className="h-12 w-12 text-green-600" />,
+                icon: <Star className="h-12 w-12 text-brand" />,
                 title: "Quality Guaranteed",
                 description: "Every product is carefully inspected to meet our high quality standards."
               },
               {
-                icon: <ShoppingCart className="h-12 w-12 text-green-600" />,
+                icon: <ShoppingCart className="h-12 w-12 text-brand" />,
                 title: "Easy Shopping",
                 description: "Simple ordering process with fast delivery across Tanzania."
               }

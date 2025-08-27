@@ -34,7 +34,7 @@ const Cart = () => {
             <h1 className="text-3xl font-bold text-gray-900 mb-4">Your cart is empty</h1>
             <p className="text-gray-600 mb-8">Add some delicious products to get started!</p>
             <Link to="/marketplace">
-              <Button size="lg" className="bg-green-600 hover:bg-green-700">
+              <Button size="lg" className="bg-brand hover:bg-primary-dark text-primary-foreground">
                 Start Shopping
               </Button>
             </Link>
@@ -57,7 +57,7 @@ const Cart = () => {
           className="flex items-center justify-between mb-8"
         >
           <div>
-            <Link to="/marketplace" className="flex items-center text-green-600 hover:text-green-700 mb-2">
+            <Link to="/marketplace" className="flex items-center text-brand hover:text-primary-dark mb-2">
               <ArrowLeft className="h-4 w-4 mr-1" />
               Continue Shopping
             </Link>
@@ -99,7 +99,7 @@ const Cart = () => {
                       <div className="flex-1">
                         <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
                         <p className="text-sm text-gray-600">{item.seller}</p>
-                        <p className="text-lg font-bold text-green-600 mt-1">
+                        <p className="text-lg font-bold text-brand mt-1">
                           {formatPrice(item.price)} <span className="text-sm font-normal text-gray-500">{item.unit}</span>
                         </p>
                       </div>
@@ -190,11 +190,11 @@ const Cart = () => {
                   </p>
                 )}
                 
-                <Link to="/checkout" className="block">
-                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-lg">
-                    Proceed to Checkout
-                  </Button>
-                </Link>
+                  <Link to="/checkout" className="w-full">
+                    <Button className="w-full bg-brand hover:bg-primary-dark text-primary-foreground py-6 text-lg">
+                      Proceed to Checkout
+                    </Button>
+                  </Link>
                 
                 <Link to="/marketplace" className="block">
                   <Button variant="outline" className="w-full">

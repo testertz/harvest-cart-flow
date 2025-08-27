@@ -43,35 +43,35 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-lg">F</span>
+            <div className="w-8 h-8 bg-brand rounded-full flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-lg">A</span>
             </div>
-            <span className="text-xl font-bold text-gray-800">FarmConnect</span>
+            <span className="text-xl font-bold text-on-surface">AgriMarket</span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link 
               to="/" 
-              className="text-gray-600 hover:text-green-600 transition-colors font-medium"
+              className="text-on-surface hover:text-brand transition-colors font-medium"
             >
               Home
             </Link>
             <Link 
               to="/marketplace" 
-              className="text-gray-600 hover:text-green-600 transition-colors font-medium"
+              className="text-on-surface hover:text-brand transition-colors font-medium"
             >
               Marketplace
             </Link>
             <Link 
               to="/about" 
-              className="text-gray-600 hover:text-green-600 transition-colors font-medium"
+              className="text-on-surface hover:text-brand transition-colors font-medium"
             >
               About
             </Link>
             <Link 
               to="/contact" 
-              className="text-gray-600 hover:text-green-600 transition-colors font-medium"
+              className="text-on-surface hover:text-brand transition-colors font-medium"
             >
               Contact
             </Link>
@@ -79,16 +79,16 @@ const Navigation = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/cart" className="relative">
-              <Button variant="ghost" size="sm">
-                <ShoppingCart className="h-5 w-5" />
-                {itemCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {itemCount}
-                  </span>
-                )}
-              </Button>
-            </Link>
+          <Link to="/cart" className="relative">
+            <Button variant="ghost" size="sm" className="text-on-surface hover:text-brand">
+              <ShoppingCart className="h-5 w-5" />
+              {itemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-brand text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {itemCount}
+                </span>
+              )}
+            </Button>
+          </Link>
 
             {user ? (
               <DropdownMenu>
@@ -142,44 +142,44 @@ const Navigation = () => {
             <div className="flex flex-col space-y-4">
               <Link 
                 to="/" 
-                className="text-gray-600 hover:text-green-600 transition-colors"
+                className="text-on-surface hover:text-brand transition-colors"
                 onClick={() => setIsOpen(false)}
               >
                 Home
               </Link>
               <Link 
                 to="/marketplace" 
-                className="text-gray-600 hover:text-green-600 transition-colors"
+                className="text-on-surface hover:text-brand transition-colors"
                 onClick={() => setIsOpen(false)}
               >
                 Marketplace
               </Link>
               <Link 
                 to="/about" 
-                className="text-gray-600 hover:text-green-600 transition-colors"
+                className="text-on-surface hover:text-brand transition-colors"
                 onClick={() => setIsOpen(false)}
               >
                 About
               </Link>
               <Link 
                 to="/contact" 
-                className="text-gray-600 hover:text-green-600 transition-colors"
+                className="text-on-surface hover:text-brand transition-colors"
                 onClick={() => setIsOpen(false)}
               >
                 Contact
               </Link>
               
               <div className="pt-4 border-t">
-                <Link to="/cart" className="flex items-center space-x-2 text-gray-600 hover:text-green-600 transition-colors mb-4">
-                  <ShoppingCart className="h-5 w-5" />
-                  <span>Cart ({itemCount})</span>
-                </Link>
+              <Link to="/cart" className="flex items-center space-x-2 text-on-surface hover:text-brand transition-colors mb-4">
+                <ShoppingCart className="h-5 w-5" />
+                <span>Cart ({itemCount})</span>
+              </Link>
                 
                 {user ? (
                   <div className="space-y-2">
                     <Link 
                       to={getDashboardLink()} 
-                      className="flex items-center space-x-2 text-gray-600 hover:text-green-600 transition-colors"
+                      className="flex items-center space-x-2 text-on-surface hover:text-brand transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
                       <LayoutDashboard className="h-5 w-5" />

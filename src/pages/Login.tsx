@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuthStore } from '@/store/authStore';
-import { toast } from 'sonner';
+import { toast } from '@/hooks/use-toast';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 
@@ -28,17 +28,31 @@ const Login = () => {
       // Demo accounts
       if (email === 'admin@agrimarket.co.tz' && password === 'admin123') {
         login({ id: '1', email, name: 'Admin User', role: 'admin' });
-        toast.success('Welcome back, Admin!');
+        toast({
+          title: "Welcome back, Admin!",
+          description: "Successfully logged in to admin dashboard."
+        });
         navigate('/admin/dashboard');
       } else if (email === 'user@example.com' && password === 'user123') {
         login({ id: '2', email, name: 'John Farmer', role: 'user' });
-        toast.success('Welcome back!');
+        toast({
+          title: "Welcome back!",
+          description: "Successfully logged in to your account."
+        });
         navigate('/dashboard');
       } else {
-        toast.error('Invalid credentials. Try admin@agrimarket.co.tz/admin123 or user@example.com/user123');
+        toast({
+          title: "Login failed",
+          description: "Invalid credentials. Try admin@agrimarket.co.tz/admin123 or user@example.com/user123",
+          variant: "destructive"
+        });
       }
     } catch (error) {
-      toast.error('Login failed. Please try again.');
+      toast({
+        title: "Login failed",
+        description: "Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }

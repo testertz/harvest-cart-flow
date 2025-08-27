@@ -87,7 +87,7 @@ const ProductDetail = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <Link to="/marketplace" className="hover:text-green-600 flex items-center">
+          <Link to="/marketplace" className="hover:text-brand flex items-center">
             <ArrowLeft className="h-4 w-4 mr-1" />
             Back to Marketplace
           </Link>
@@ -112,7 +112,7 @@ const ProductDetail = () => {
               />
               <div className="absolute top-4 left-4 flex flex-col gap-2">
                 {product.organic && (
-                  <Badge className="bg-green-600 text-white flex items-center gap-1">
+                  <Badge className="bg-brand text-primary-foreground flex items-center gap-1">
                     <Leaf className="h-3 w-3" />
                     Organic
                   </Badge>
@@ -162,7 +162,7 @@ const ProductDetail = () => {
               </div>
 
               <div className="flex items-baseline space-x-3 mb-6">
-                <span className="text-3xl font-bold text-green-600">{formatPrice(product.price)}</span>
+                <span className="text-3xl font-bold text-brand">{formatPrice(product.price)}</span>
                 {product.originalPrice && (
                   <span className="text-xl text-gray-500 line-through">{formatPrice(product.originalPrice)}</span>
                 )}
@@ -209,7 +209,7 @@ const ProductDetail = () => {
 
               <Button
                 onClick={handleAddToCart}
-                className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-lg"
+                className="w-full bg-brand hover:bg-primary-dark text-primary-foreground py-6 text-lg"
                 disabled={product.availability === 'out-of-stock'}
               >
                 <ShoppingCart className="h-5 w-5 mr-2" />

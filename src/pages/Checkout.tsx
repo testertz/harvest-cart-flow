@@ -75,11 +75,11 @@ const Checkout = () => {
         >
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Your cart is empty</h1>
           <p className="text-gray-600 mb-8">Add some products before checkout!</p>
-          <Link to="/marketplace">
-            <Button size="lg" className="bg-green-600 hover:bg-green-700">
-              Browse Products
-            </Button>
-          </Link>
+            <Link to="/marketplace">
+              <Button size="lg" className="bg-brand hover:bg-primary-dark text-primary-foreground">
+                Browse Products
+              </Button>
+            </Link>
         </motion.div>
       </div>
     );
@@ -103,7 +103,7 @@ const Checkout = () => {
           </p>
           <div className="space-y-4">
             <Link to="/marketplace">
-              <Button className="w-full bg-green-600 hover:bg-green-700">
+              <Button className="w-full bg-brand hover:bg-primary-dark text-primary-foreground">
                 Continue Shopping
               </Button>
             </Link>
@@ -127,7 +127,7 @@ const Checkout = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <Link to="/cart" className="flex items-center text-green-600 hover:text-green-700 mb-4">
+          <Link to="/cart" className="flex items-center text-brand hover:text-primary-dark mb-4">
             <ArrowLeft className="h-4 w-4 mr-1" />
             Back to Cart
           </Link>
@@ -310,11 +310,11 @@ const Checkout = () => {
                 </CardContent>
               </Card>
 
-              <Button
-                type="submit"
-                className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-lg"
-                disabled={isProcessing}
-              >
+                <Button
+                  type="submit"
+                  className="w-full bg-brand hover:bg-primary-dark text-primary-foreground py-6 text-lg"
+                  disabled={isProcessing}
+                >
                 {isProcessing ? 'Processing...' : `Complete Order - ${formatPrice(total)}`}
               </Button>
             </form>
