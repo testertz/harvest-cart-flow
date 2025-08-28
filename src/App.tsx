@@ -19,6 +19,12 @@ import Contact from '@/pages/Contact';
 import NotFound from '@/pages/NotFound';
 import Notifications from '@/pages/Notifications';
 
+// User profile pages
+import EditProfile from '@/pages/EditProfile';
+import PaymentHistory from '@/pages/PaymentHistory';
+import OrderDetails from '@/pages/OrderDetails';
+import EditAddress from '@/pages/EditAddress';
+
 // Admin Pages
 import AdminUsers from '@/pages/admin/AdminUsers';
 import AdminProducts from '@/pages/admin/AdminProducts';
@@ -58,6 +64,13 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/notifications" element={<Notifications />} />
+          
+          {/* User Profile Routes */}
+          <Route path="/edit-profile" element={<EditProfile />} />
+          <Route path="/payment-history" element={<PaymentHistory />} />
+          <Route path="/order-details/:orderId" element={<OrderDetails />} />
+          <Route path="/edit-address/:addressId" element={<EditAddress />} />
+          
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/products" element={<AdminProducts />} />

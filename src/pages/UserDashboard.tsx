@@ -119,8 +119,7 @@ const UserDashboard = () => {
 
   // Handler functions
   const handleViewOrder = (order: any) => {
-    toast.success(`Viewing order ${order.id}`);
-    console.log('View order:', order);
+    navigate(`/order-details/${order.id}`);
   };
 
   const handleAddToCart = (item: any) => {
@@ -153,13 +152,11 @@ const UserDashboard = () => {
   };
 
   const handleAddAddress = () => {
-    toast.info('Add address form would open here');
-    console.log('Add new address');
+    navigate('/edit-address/new');
   };
 
   const handleEditAddress = (address: any) => {
-    toast.info(`Edit address form for ${address.type} would open here`);
-    console.log('Edit address:', address);
+    navigate(`/edit-address/${address.id}`);
   };
 
   const handleDeleteAddress = (address: any) => {
@@ -378,6 +375,15 @@ const UserDashboard = () => {
       value: 'payments',
       label: 'Payments',
       content: (
+        <div className="space-y-6">
+          <div className="flex justify-end">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/payment-history')}
+            >
+              View Payment History
+            </Button>
+          </div>
         <Card className="shadow-lg border-0">
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -425,6 +431,7 @@ const UserDashboard = () => {
             </div>
           </CardContent>
         </Card>
+        </div>
       )
     },
     {
@@ -470,7 +477,12 @@ const UserDashboard = () => {
                   </div>
                 </div>
               </div>
-              <Button className="w-full">Edit Profile</Button>
+              <Button 
+                className="w-full"
+                onClick={() => navigate('/edit-profile')}
+              >
+                Edit Profile
+              </Button>
             </CardContent>
           </Card>
 
