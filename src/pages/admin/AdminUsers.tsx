@@ -1,164 +1,166 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { Edit, Trash2, Plus, Search, UserCheck, UserX } from 'lucide-react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import DataTable from '@/components/dashboard/DataTable';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Users, UserPlus, UserCheck, UserX, Download, Filter } from 'lucide-react';
-import StatCard from '@/components/dashboard/StatCard';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useAdminStore } from '@/store/adminStore';
+import { toast } from '@/hooks/use-toast';
 
 const AdminUsers = () => {
-  const navigate = useNavigate();
-  
-  const [users] = useState([
-    {
-      id: 1,
-      name: 'John Mwangi',
-      email: 'john@example.com',
-      role: 'User',
-      location: 'Dar es Salaam',
-      joinDate: '2024-01-15',
-      status: 'Active',
-      orders: 12,
-      totalSpent: 340000,
-      lastLogin: '2024-03-15'
-    },
-    {
-      id: 2,
-      name: 'Mary Kilimo',
-      email: 'mary@example.com',
-      role: 'Farmer',
-      location: 'Arusha',
-      joinDate: '2024-02-10',
-      status: 'Active',
-      orders: 8,
-      totalSpent: 250000,
-      lastLogin: '2024-03-14'
-    },
-    {
-      id: 3,
-      name: 'Peter Shamba',
-      email: 'peter@example.com',
-      role: 'User',
-      location: 'Mbeya',
-      joinDate: '2024-03-01',
-      status: 'Inactive',
-      orders: 3,
-      totalSpent: 89000,
-      lastLogin: '2024-03-10'
+  const { users, deleteUser, updateUser } = useAdminStore();
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredUsers = users.filter(user =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.role.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleDeleteUser = (id: string, name: string) => {
+    if (window.confirm(`Are you sure you want to delete user "${name}"?`)) {
+      deleteUser(id);
+      toast({
+        title: "User deleted",
+        description: `${name} has been removed from the system.`,
+      });
     }
-  ]);
+  };
 
-  const userStats = [
-    {
-      title: 'Total Users',
-      value: '1,247',
-      icon: Users,
-      color: 'from-blue-500 to-blue-600',
-      trend: { value: 15, isPositive: true },
-      subtitle: 'Registered users'
-    },
-    {
-      title: 'Active Users',
-      value: '1,089',
-      icon: UserCheck,
-      color: 'from-green-500 to-green-600',
-      trend: { value: 8, isPositive: true },
-      subtitle: 'Last 30 days'
-    },
-    {
-      title: 'New Users',
-      value: '156',
-      icon: UserPlus,
-      color: 'from-purple-500 to-purple-600',
-      trend: { value: 22, isPositive: true },
-      subtitle: 'This month'
-    },
-    {
-      title: 'Inactive Users',
-      value: '158',
-      icon: UserX,
-      color: 'from-orange-500 to-orange-600',
-      subtitle: 'Need attention'
+  const handleToggleStatus = (id: string, currentStatus: string, name: string) => {
+    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    updateUser(id, { status: newStatus });
+    toast({
+      title: "Status updated",
+      description: `${name} has been ${newStatus === 'active' ? 'activated' : 'deactivated'}.`,
+    });
+  };
+
+  const getRoleBadge = (role: string) => {
+    switch (role) {
+      case 'admin':
+        return <Badge className="bg-purple-500 hover:bg-purple-600">Admin</Badge>;
+      case 'farmer':
+        return <Badge className="bg-green-500 hover:bg-green-600">Farmer</Badge>;
+      case 'user':
+        return <Badge className="bg-blue-500 hover:bg-blue-600">User</Badge>;
+      default:
+        return <Badge variant="secondary">Unknown</Badge>;
     }
-  ];
-
-  const userColumns = [
-    { key: 'name', title: 'Name', sortable: true },
-    { key: 'email', title: 'Email' },
-    { key: 'role', title: 'Role' },
-    { key: 'location', title: 'Location' },
-    { key: 'orders', title: 'Orders', sortable: true },
-    { key: 'totalSpent', title: 'Total Spent', sortable: true },
-    { key: 'status', title: 'Status' },
-    { key: 'joinDate', title: 'Join Date', sortable: true },
-    { key: 'lastLogin', title: 'Last Login', sortable: true }
-  ];
-
-  const handleAddUser = () => {
-    navigate('/admin/users/add');
   };
 
-  const handleEditUser = (user: any) => {
-    navigate(`/admin/users/edit/${user.id}`);
-  };
-
-  const handleDeleteUser = (user: any) => {
-    console.log('Delete user:', user);
-  };
-
-  const handleVerifyUser = (user: any) => {
-    console.log('Verify user:', user);
+  const getStatusBadge = (status: string) => {
+    return status === 'active' ? (
+      <Badge className="bg-green-500 hover:bg-green-600">Active</Badge>
+    ) : (
+      <Badge className="bg-red-500 hover:bg-red-600">Inactive</Badge>
+    );
   };
 
   return (
-    <AdminLayout 
-      title="User Management"
-      subtitle="Manage all platform users, their roles, and activities"
-    >
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
-        {userStats.map((stat, index) => (
-          <StatCard key={index} {...stat} />
-        ))}
-      </div>
+    <AdminLayout>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Users Management</h1>
+            <p className="text-muted-foreground">Manage platform users and their roles</p>
+          </div>
+          <Link to="/admin/users/add">
+            <Button className="bg-primary hover:bg-primary/90">
+              <Plus className="h-4 w-4 mr-2" />
+              Add User
+            </Button>
+          </Link>
+        </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4 mb-6 lg:mb-8">
-        <Button onClick={handleAddUser} className="flex items-center justify-center space-x-2 text-sm">
-          <UserPlus className="h-4 w-4" />
-          <span className="hidden sm:inline">Add User</span>
-          <span className="sm:hidden">Add</span>
-        </Button>
-        <Button variant="outline" className="flex items-center justify-center space-x-2 text-sm">
-          <Filter className="h-4 w-4" />
-          <span className="hidden sm:inline">Filter Users</span>
-          <span className="sm:hidden">Filter</span>
-        </Button>
-        <Button variant="outline" className="flex items-center justify-center space-x-2 text-sm">
-          <Download className="h-4 w-4" />
-          <span className="hidden sm:inline">Export Users</span>
-          <span className="sm:hidden">Export</span>
-        </Button>
-        <Button variant="outline" className="flex items-center justify-center space-x-2 text-sm">
-          <UserCheck className="h-4 w-4" />
-          <span className="hidden sm:inline">Bulk Actions</span>
-          <span className="sm:hidden">Bulk</span>
-        </Button>
+        <Card>
+          <CardHeader>
+            <CardTitle>All Users ({filteredUsers.length})</CardTitle>
+            <div className="flex gap-4">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="Search users..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Join Date</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredUsers.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                            <span className="text-sm font-semibold text-primary">
+                              {user.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          {user.name}
+                        </div>
+                      </TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>{getRoleBadge(user.role)}</TableCell>
+                      <TableCell>{getStatusBadge(user.status)}</TableCell>
+                      <TableCell>
+                        {new Date(user.joinDate).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleToggleStatus(user.id, user.status, user.name)}
+                            className={user.status === 'active' ? 'text-red-600' : 'text-green-600'}
+                          >
+                            {user.status === 'active' ? (
+                              <UserX className="h-4 w-4" />
+                            ) : (
+                              <UserCheck className="h-4 w-4" />
+                            )}
+                          </Button>
+                          <Link to={`/admin/users/edit/${user.id}`}>
+                            <Button size="sm" variant="outline">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleDeleteUser(user.id, user.name)}
+                            className="text-red-600 hover:text-red-700"
+                            disabled={user.role === 'admin'}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-
-      {/* Users Table */}
-      <DataTable
-        title="All Users"
-        data={users}
-        columns={userColumns}
-        searchPlaceholder="Search users by name, email, or location..."
-        onAdd={handleAddUser}
-        onEdit={handleEditUser}
-        onDelete={handleDeleteUser}
-        onVerify={handleVerifyUser}
-      />
     </AdminLayout>
   );
 };

@@ -1,10 +1,12 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Star, Leaf } from 'lucide-react';
+import { ShoppingCart, Star, Leaf, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { useCartStore } from '@/store/cartStore';
+import { useWishlistStore } from '@/store/wishlistStore';
+import { useReviewsStore } from '@/store/reviewsStore';
 import { Product } from '@/data/products';
 import { toast } from '@/hooks/use-toast';
 
@@ -14,6 +16,12 @@ interface ProductCardProps {
 
 const ProductCard = ({ product }: ProductCardProps) => {
   const { addItem } = useCartStore();
+  const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
+  const { getAverageRating, getReviewCount } = useReviewsStore();
+  
+  const inWishlist = isInWishlist(product.id);
+  const avgRating = getAverageRating(product.id) || product.rating;
+  const reviewCount = getReviewCount(product.id) || product.reviews;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -30,6 +38,30 @@ const ProductCard = ({ product }: ProductCardProps) => {
       title: "Added to cart!",
       description: `${product.name} has been added to your cart.`,
     });
+  };
+
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (inWishlist) {
+      removeFromWishlist(product.id);
+      toast({
+        title: "Removed from wishlist",
+        description: `${product.name} has been removed from your wishlist.`,
+      });
+    } else {
+      addToWishlist({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        seller: product.seller,
+        unit: product.unit
+      });
+      toast({
+        title: "Added to wishlist!",
+        description: `${product.name} has been added to your wishlist.`,
+      });
+    }
   };
 
   const formatPrice = (price: number) => {
@@ -81,7 +113,17 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 </Badge>
               )}
             </div>
-            <div className="absolute top-2 right-2">
+            <div className="absolute top-2 right-2 flex flex-col gap-1">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={handleWishlistToggle}
+                className={`h-8 w-8 rounded-full bg-white/80 hover:bg-white ${
+                  inWishlist ? 'text-red-500' : 'text-gray-600'
+                }`}
+              >
+                <Heart className={`h-4 w-4 ${inWishlist ? 'fill-current' : ''}`} />
+              </Button>
               <Badge 
                 className={`${getAvailabilityColor(product.availability)} text-white`}
               >
@@ -101,8 +143,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <div className="flex items-center mb-2">
               <div className="flex items-center">
                 <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                <span className="ml-1 text-sm font-medium">{product.rating}</span>
-                <span className="ml-1 text-sm text-gray-500">({product.reviews})</span>
+                <span className="ml-1 text-sm font-medium">{avgRating}</span>
+                <span className="ml-1 text-sm text-gray-500">({reviewCount})</span>
               </div>
             </div>
 

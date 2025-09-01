@@ -1,166 +1,172 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { Edit, Trash2, Plus, Search, Eye } from 'lucide-react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import DataTable from '@/components/dashboard/DataTable';
 import { Button } from '@/components/ui/button';
-import { Package, PackagePlus, Eye, Download, Filter } from 'lucide-react';
-import StatCard from '@/components/dashboard/StatCard';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useAdminStore } from '@/store/adminStore';
+import { products as initialProducts } from '@/data/products';
+import { toast } from '@/hooks/use-toast';
 
 const AdminProducts = () => {
-  const navigate = useNavigate();
-  
-  const [products] = useState([
-    {
-      id: 1,
-      name: 'Organic Tomatoes',
-      category: 'Vegetables',
-      price: 8000,
-      stock: 150,
-      sold: 89,
-      rating: 4.5,
-      status: 'Active',
-      farmer: 'John Farm Co.',
-      dateAdded: '2024-01-15'
-    },
-    {
-      id: 2,
-      name: 'Fresh Avocados',
-      category: 'Fruits',
-      price: 12000,
-      stock: 75,
-      sold: 156,
-      rating: 4.8,
-      status: 'Active',
-      farmer: 'Green Valley',
-      dateAdded: '2024-02-10'
-    },
-    {
-      id: 3,
-      name: 'Sweet Potatoes',
-      category: 'Vegetables',
-      price: 5000,
-      stock: 5,
-      sold: 234,
-      rating: 4.3,
-      status: 'Low Stock',
-      farmer: 'Farm Fresh Ltd',
-      dateAdded: '2024-03-01'
+  const { products, deleteProduct, initializeProducts } = useAdminStore();
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Initialize products if empty
+  if (products.length === 0) {
+    initializeProducts(initialProducts);
+  }
+
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.seller.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleDeleteProduct = (id: string, name: string) => {
+    if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
+      deleteProduct(id);
+      toast({
+        title: "Product deleted",
+        description: `${name} has been removed from the system.`,
+      });
     }
-  ]);
+  };
 
-  const productStats = [
-    {
-      title: 'Total Products',
-      value: '345',
-      icon: Package,
-      color: 'from-blue-500 to-blue-600',
-      trend: { value: 12, isPositive: true },
-      subtitle: 'Active products'
-    },
-    {
-      title: 'Low Stock',
-      value: '23',
-      icon: Package,
-      color: 'from-orange-500 to-orange-600',
-      subtitle: 'Need restocking'
-    },
-    {
-      title: 'Out of Stock',
-      value: '8',
-      icon: Package,
-      color: 'from-red-500 to-red-600',
-      subtitle: 'Unavailable'
-    },
-    {
-      title: 'New Products',
-      value: '45',
-      icon: PackagePlus,
-      color: 'from-green-500 to-green-600',
-      trend: { value: 18, isPositive: true },
-      subtitle: 'This month'
+  const getAvailabilityBadge = (availability: string) => {
+    switch (availability) {
+      case 'in-stock':
+        return <Badge className="bg-green-500 hover:bg-green-600">In Stock</Badge>;
+      case 'low-stock':
+        return <Badge className="bg-yellow-500 hover:bg-yellow-600">Low Stock</Badge>;
+      case 'out-of-stock':
+        return <Badge className="bg-red-500 hover:bg-red-600">Out of Stock</Badge>;
+      default:
+        return <Badge variant="secondary">Unknown</Badge>;
     }
-  ];
-
-  const productColumns = [
-    { key: 'name', title: 'Product', sortable: true },
-    { key: 'category', title: 'Category' },
-    { key: 'price', title: 'Price', sortable: true },
-    { key: 'stock', title: 'Stock', sortable: true },
-    { key: 'sold', title: 'Sold', sortable: true },
-    { key: 'rating', title: 'Rating', sortable: true },
-    { key: 'farmer', title: 'Farmer' },
-    { key: 'status', title: 'Status' },
-    { key: 'dateAdded', title: 'Date Added', sortable: true }
-  ];
-
-  const handleAddProduct = () => {
-    navigate('/admin/products/add');
-  };
-
-  const handleEditProduct = (product: any) => {
-    navigate(`/admin/products/edit/${product.id}`);
-  };
-
-  const handleDeleteProduct = (product: any) => {
-    console.log('Delete product:', product);
-  };
-
-  const handleViewProduct = (product: any) => {
-    console.log('View product:', product);
   };
 
   return (
-    <AdminLayout 
-      title="Product Management"
-      subtitle="Manage all products, inventory, and pricing"
-    >
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
-        {productStats.map((stat, index) => (
-          <StatCard key={index} {...stat} />
-        ))}
-      </div>
+    <AdminLayout>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Products Management</h1>
+            <p className="text-muted-foreground">Manage your marketplace products</p>
+          </div>
+          <Link to="/admin/products/add">
+            <Button className="bg-primary hover:bg-primary/90">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Product
+            </Button>
+          </Link>
+        </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4 mb-6 lg:mb-8">
-        <Button onClick={handleAddProduct} className="flex items-center justify-center space-x-2 text-sm">
-          <PackagePlus className="h-4 w-4" />
-          <span className="hidden sm:inline">Add Product</span>
-          <span className="sm:hidden">Add</span>
-        </Button>
-        <Button variant="outline" className="flex items-center justify-center space-x-2 text-sm">
-          <Filter className="h-4 w-4" />
-          <span className="hidden sm:inline">Filter Products</span>
-          <span className="sm:hidden">Filter</span>
-        </Button>
-        <Button variant="outline" className="flex items-center justify-center space-x-2 text-sm">
-          <Download className="h-4 w-4" />
-          <span className="hidden sm:inline">Export Products</span>
-          <span className="sm:hidden">Export</span>
-        </Button>
-        <Button variant="outline" className="flex items-center justify-center space-x-2 text-sm">
-          <Eye className="h-4 w-4" />
-          <span className="hidden sm:inline">View Analytics</span>
-          <span className="sm:hidden">Analytics</span>
-        </Button>
+        <Card>
+          <CardHeader>
+            <CardTitle>All Products ({filteredProducts.length})</CardTitle>
+            <div className="flex gap-4">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="Search products..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Image</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Seller</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Rating</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredProducts.map((product) => (
+                    <TableRow key={product.id}>
+                      <TableCell>
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-12 h-12 object-cover rounded-lg"
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        <div>
+                          <p className="font-semibold">{product.name}</p>
+                          <p className="text-sm text-muted-foreground">{product.unit}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>{product.seller}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="capitalize">
+                          {product.category}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="font-semibold">TZS {product.price.toLocaleString()}</p>
+                          {product.originalPrice && (
+                            <p className="text-sm text-muted-foreground line-through">
+                              TZS {product.originalPrice.toLocaleString()}
+                            </p>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {getAvailabilityBadge(product.availability)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <span className="text-yellow-500">★</span>
+                          <span>{product.rating}</span>
+                          <span className="text-muted-foreground">({product.reviews})</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Link to={`/product/${product.id}`}>
+                            <Button size="sm" variant="outline">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                          <Link to={`/admin/products/edit/${product.id}`}>
+                            <Button size="sm" variant="outline">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleDeleteProduct(product.id, product.name)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-
-      {/* Products Table */}
-      <DataTable
-        title="All Products"
-        data={products}
-        columns={productColumns}
-        searchPlaceholder="Search products by name, category, or farmer..."
-        onAdd={handleAddProduct}
-        onEdit={handleEditProduct}
-        onDelete={handleDeleteProduct}
-        renderCell={(item, key) => {
-          if (key === 'stock' && item.stock < 10) {
-            return <span className="text-red-600 font-semibold">{item.stock}</span>;
-          }
-          return undefined;
-        }}
-      />
     </AdminLayout>
   );
 };
